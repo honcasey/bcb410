@@ -1,11 +1,16 @@
-Package: cellLine2
+Package: cellLineConsistency
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Identify Consistent Cell Lines in Pharmacogenomic Datasets
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: person("Casey", "Hon", email = "casey.hon@mail.utoronto.ca", role = c("aut", "cre"))
+Maintainer: Casey Hon <casey.hon@mail.utoronto.ca>
+Description: Compute correlations and concordance indices of cancer cell lines 
+    across pharmacogenomic datasets to identify consistent cell lines. It uses
+    the PharmacoSets from the PharmacoGx package.
+Depends: R (>= 3.1.0)
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/honcasey/cellLineConsistency
+Imports:
+    PharmacoGx
