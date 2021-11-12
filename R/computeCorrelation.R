@@ -28,6 +28,7 @@
 #' rm(GRAY)
 #'
 #' set.seed(1001)
+#' TO-DO***
 #'
 #'
 #' @author {Casey Hon, \email{casey.hon@mail.utoronto.ca}}
@@ -67,21 +68,26 @@ computeCorrelation <- function(pSet,
 
   # separate each pset after intersection
   pSetList <- list()
-  sensUsed <- list()
+  # sensUsed <- list()
   for (set in pSet) {
     x <- set@annotation[["name"]]
     pSetList <- append(pSetList, x)
-    sensUsed <- append(sensUsed, names(set@sensitivity[["profiles"]]))
+    # sensUsed <- append(sensUsed, names(set@sensitivity[["profiles"]]))
     assign(x, set, envir = globalenv())
   }
 
-  sensUsed <- unique(sensUsed) # keep only unique values of sensitivity measures
+  # sensUsed <- unique(sensUsed) # keep only unique values of sensitivity measures
+  sensUsed <- intersectSensMeasures(pSet)
+  # put in package name here? cellLineConsistency::intersectSensMeasures()?
 
   if (is.character(sensMeasures) == TRUE) {
-    if (all((sensMeasures == sensUsed) == FALSE)) {
+    # check if all measures inputted are in common in all psets of choice
+    if (all((sensMeasures %in% sensUsed) == FALSE)) {
       stop("sensMeasures should be of class character, specifying the drug
          sensitivity measures as outputted by
-         > names(PSET@sensitivity[[\"profiles\"]])")
+         > names(PSET@sensitivity[[\"profiles\"]])
+         The list must be a subset of the
+         measures in common to all PSets intersected.")
     }
   } else if (is.character(sensMeasures) != TRUE) {
     stop("sensMeasures should be of class character, specifying the drug
@@ -98,23 +104,34 @@ computeCorrelation <- function(pSet,
     coefs <- c(coefs, paste(coefs, "p-value", sep = ' '))
   }
 
-
-  # initialize data frame to be outputted
-  cors = data.frame(matrix(ncol = length(coefs) * ncol(pSetPairs),
-                           nrow = length(colnames(intersected)),
-                           row.names = colnames(intersected)))
-  colnames(cors) <- coefs
+  # if there is more than two psets then add pset names for each coef and pair
+  if (length(pSet) > 2) {
+    # go through each pair in pSetList and paste new coef to list
+    for (pair in colnames(pSetPairs)) {
+      tempString <- paste(pSetPairs[1, pair], pSetPairs[2, pair], sep = '&')
+      coefs <- c(coefs, paste(coefs, tempString, sep = '_'))
+    }
+  }
 
   # get sensitivity profiles for each sensitivity measure for each pset
   for (pSet in pSet) {
     for (sensName in sensMeasures) {
-      var_name <- paste0(coefName, pSet@annotation[["name"]], sep = "_")
+      var_name <- paste(sensName, pSet@annotation[["name"]], sep = "_")
       assign(var_name,
              as.data.frame(PharmacoGx::summarizeSensitivityProfiles(pSet,
-                                                                    sensitivity.measure = coefName)),
+                                                                    sensitivity.measure = sensName)),
              envir = globalenv())
     }
-  } ## TO-DO: not sure if this works yet
+  }
+
+  drugs <- rownames(pSet[[1]]@drug)
+
+  # initialize data frame to be outputted
+  cors = data.frame(matrix(ncol = length(coefs) * ncol(pSetPairs),
+                           # columns are each type of correlation coefficient
+                           nrow = length(drugs)),
+                           row.names = drugs)
+  colnames(cors) <- coefs
 
   # compute each correlation in coef between each pair of psets
   for (cell.line in rownames(cors)) {
@@ -122,7 +139,7 @@ computeCorrelation <- function(pSet,
       expr = {
         if ("pearson" %in% coefs) {
           for (pair in colnames(pSetPairs)) {
-            pearson.cor <- cor.test(x = pSetPairs["1", pair], y = pSetPairs["2", pair]) # not finished
+            pearson.cor <- cor.test(x = pSetPairs[1, pair], y = pSetPairs[2, pair]) # not finished
           }
 
         }
