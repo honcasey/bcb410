@@ -114,14 +114,19 @@ computeCorrelation <- function(pSet,
   }
 
   # get sensitivity profiles for each sensitivity measure for each pset
+  ## TO-DO: fix this list for future use
+  profList <- list() # list of all sensitivity profiles
   for (pSet in pSet) {
+    setProfList <- list()
     for (sensName in sensMeasures) {
       var_name <- paste(sensName, pSet@annotation[["name"]], sep = "_")
       assign(var_name,
              as.data.frame(PharmacoGx::summarizeSensitivityProfiles(pSet,
                                                                     sensitivity.measure = sensName)),
              envir = globalenv())
+      setProfList <- append(setProfList, sensName = get(var_name))
     }
+    profList <- append(profList, pSet = get(setProfList))
   }
 
   drugs <- rownames(pSet[[1]]@drug)
@@ -139,7 +144,9 @@ computeCorrelation <- function(pSet,
       expr = {
         if ("pearson" %in% coefs) {
           for (pair in colnames(pSetPairs)) {
-            pearson.cor <- cor.test(x = pSetPairs[1, pair], y = pSetPairs[2, pair]) # not finished
+            set1 <- get(pSetPairs[1, pair][[1]])
+            set2 <- get(pSetPairs[2, pair][[1]])
+            pearson.cor <- cor.test(x = set1, y = set2) # not finished
           }
 
         }
