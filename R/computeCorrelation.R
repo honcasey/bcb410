@@ -15,8 +15,9 @@
 #' @param pval Logical of whether or not to include p-values of each
 #'     correlation coefficient. Default is TRUE.
 #'
-#' @return Returns a dataframe where rows correspond to drugs and columns
-#'     correspond to each type of correlation coefficient from coefs.
+#' @return Returns a dataframe for each sensitivity measure of interest,
+#'     where rows correspond to drugs and columns correspond to each type
+#'     of correlation coefficient from coefs.
 #'     Also includes p-values in columns is pval was set to TRUE.
 #'
 #' @example
@@ -114,48 +115,93 @@ computeCorrelation <- function(pSet,
   }
 
   # get sensitivity profiles for each sensitivity measure for each pset
-  ## TO-DO: fix this list for future use
-  profList <- list() # list of all sensitivity profiles
+  profList <- list() # list of each psets sensitivity profiles
   for (pSet in pSet) {
-    setProfList <- list()
+    setProfList <- list() # list sensitivity profiles of current pset
     for (sensName in sensMeasures) {
-      var_name <- paste(sensName, pSet@annotation[["name"]], sep = "_")
-      assign(var_name,
-             as.data.frame(PharmacoGx::summarizeSensitivityProfiles(pSet,
-                                                                    sensitivity.measure = sensName)),
-             envir = globalenv())
-      setProfList <- append(setProfList, sensName = get(var_name))
+      pset_name <- pSet@annotation[["name"]]
+      var_name <- paste(sensName, pset_name, sep = "_")
+      prof <- PharmacoGx::summarizeSensitivityProfiles(pSet,
+                                                       sensitivity.measure = sensName)
+      assign(var_name, as.data.frame(prof), envir = globalenv())
+      setProfList[sensName] <- list(get(var_name))
     }
-    profList <- append(profList, pSet = get(setProfList))
+    profList[pset_name] <- list(setProfList)
   }
 
   drugs <- rownames(pSet[[1]]@drug)
+  cells <- rownames(pSet[[1]]@cell)
 
-  # initialize data frame to be outputted
-  cors = data.frame(matrix(ncol = length(coefs) * ncol(pSetPairs),
-                           # columns are each type of correlation coefficient
-                           nrow = length(drugs)),
-                           row.names = drugs)
-  colnames(cors) <- coefs
+  # initialize data frames to be outputted
+  cor_list <- list()
+  for (sens in sensMeasures) {
+    cors <- data.frame(matrix(ncol = length(coefs) * ncol(pSetPairs),
+                             # columns are each type of correlation coefficient
+                             nrow = length(cells)),
+                             row.names = cells)
+    colnames(cors) <- coefs
+    var_name <- paste(sens, "corrs", sep = '_')
+    assign(var_name, cors, envir = globalenv())
+    cor_list[[var_name]] <- get(var_name) # TO-DO: fix warning here (cus they're dataframes)
+  }
 
   # compute each correlation in coef between each pair of psets
-  for (cell.line in rownames(cors)) {
-    tryCatch(
-      expr = {
-        if ("pearson" %in% coefs) {
-          for (pair in colnames(pSetPairs)) {
-            set1 <- get(pSetPairs[1, pair][[1]])
-            set2 <- get(pSetPairs[2, pair][[1]])
-            pearson.cor <- cor.test(x = set1, y = set2) # not finished
-          }
-
+  for (pair in colnames(pSetPairs)) { # each PSet
+    set1 <- profList[[pSetPairs[1, pair][[1]]]]
+    set2 <- profList[[pSetPairs[2, pair][[1]]]]
+    for (sens in sensMeasures) { # each sensitivity measure (aac, ic50)
+      for (cell.line in rownames(cors)) { # each cell line
+        tryCatch(
+          expr = {
+      tofill <- get(paste(sens, "corrs", sep = '_'))
+      set1sens <- as.numeric(unlist(set1[[sens]][cell.line]))
+      set2sens <- as.numeric(unlist(set2[[sens]][cell.line]))
+      # PEARSON CORRELATION
+      if ("pearson" %in% coefs) {
+        pearson.cor <- stats::cor.test(set1sens, set2sens,
+                                method = 'pearson',
+                                use = 'pairw')
+        tofill[cell.line, "pearson"] <- pearson.cor$estimate
+        if ("pearson p-value" %in% coefs) {
+          tofill[cell.line, "pearson p-value"] <- pearson.cor$p.value
         }
       }
+      # SPEARMAN CORRELATION
+      if ("spearman" %in% coefs) {
+        spearman.cor <- stats::cor.test(set1sens, set2sens,
+                                 method = 'spearman',
+                                 use = 'pairw')
+        tofill[cell.line, "spearman"] <- spearman.cor$estimate
+        if ("spearman p-value" %in% coefs) {
+          tofill[cell.line, "spearman p-value"] <- spearman.cor$p.value
+        }
+      }
+      # KENDALL CORRELATION
+      if ("kendall" %in% coefs) {
+        kendall.cor <- stats::cor.test(set1sens, set2sens,
+                                        method = 'kendall',
+                                        use = 'pairw')
+        tofill[cell.line, "kendall"] <- kendall.cor$estimate
+        if ("kendall p-value" %in% coefs) {
+          tofill[cell.line, "kendall p-value"] <- kendall.cor$p.value
+        }
+      }
+      curr_sens <- paste(sens, "corrs", sep = "_")
+      assign(curr_sens, tofill, envir = globalenv())
+      cor_list[[curr_sens]] <- curr_sens
+    },
+      error = {function(e) {
+        message(cell.line, " does not have enough finite observations to compute
+                a correlation.")
+      }
+      }
     )
+      }
+    }
+
   }
 
 
-
-
+  return(cor_list)
 
 }
