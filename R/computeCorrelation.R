@@ -188,7 +188,7 @@ computeCorrelation <- function(pSet,
       }
       curr_sens <- paste(sens, "corrs", sep = "_")
       assign(curr_sens, tofill, envir = globalenv())
-      cor_list[[curr_sens]] <- curr_sens
+      cor_list[[curr_sens]] <- get(curr_sens)
     },
       error = {function(e) {
         message(cell.line, " does not have enough finite observations to compute
