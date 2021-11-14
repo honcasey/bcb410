@@ -10,11 +10,22 @@
 #' @param sensMeasure A character vector defining the sensitivity measure
 #'     of interest. Must be one of the measures included in the correlations
 #'     dataframe.
-#' @param min A numeric value representing the minimum consistency desired.
-#'     Default is 0.5.
+#' @param coefName A character vector defining the correlation coefficient
+#'     of interest. Must be one of the coefficients included in correlations
+#'     dataframe.
+#' @param min A numeric value representing the minimum correlation coefficient
+#'     desired. Default is 0.5.
 #'
+#' @return A dataframe containing only correlations of consistent cell lines.
 #'
-#' @return A list of consistent cell lines.
+#' @example
+#' # Intersect PharmacoSets of interest based on common cell lines
+#' CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
+#' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
+#' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
+#' correlations <- computeCorrelation(intersected, coefs = c("pearson", "spearman"), TRUE)
+#'
+#' consistentLines <- getConsistentCellLines(correlations, "aac_recomputed_corrs")
 #'
 #' @author {Casey Hon, \email{casey.hon@mail.utoronto.ca}}
 #'
@@ -22,7 +33,58 @@
 getConsistentCellLines <- function(correlations, sensMeasure, min) {
 
   # Performing Checks
-  if (is.list(correlations)) {
-
+  if (is.list(correlations) == TRUE) {
+    if (all(lapply(correlations, class) != "data.frame")) {
+      stop("All items in correlations should be dataframes containing
+           computed correlation coefficients for your sensitivity
+           measure of interest, as returned by computeCorrelation().")
+    }
+  } else if (is.list(correlations) == FALSE) {
+    stop("Correlations should be of class list containing dataframes
+         for each sensitivity measure of interest, as returned by
+         computeCorrelation().")
   }
+
+  if (is.character(sensMeasure) == TRUE) {
+    sensUsed <- names(correlations)
+    if ((sensMeasure %in% sensUsed) == FALSE) {
+      stop("sensMeasure must be one of the measures included in correlations
+           as returned by names(correlations).")
+    }
+  } else if (is.character(sensMeasure) == FALSE) {
+    stop("sensMeasure must be of class character specifying one of the
+         measures included in correlations as returned by
+         names(correlations).")
+  }
+
+  if (is.character(coefName) == TRUE) {
+    coefUsed <- names(correlations[[sensUsed]])
+    if (all(coefName == coefUsed) == FALSE) {
+      stop("coefName must be one of the correlation coefficients included
+           in correlations, as returned by
+           names(correlations[[\"sensMeasure\"]]).")
+    }
+  } else if (is.character(coefName) == FALSE) {
+    stop("coefName must be of class character specifying one of the correlation
+         coefficients included in correlations, as returned by
+         names(correlations[[\"sensMeasure\"]]).")
+  }
+
+  if (missing(min)) {
+    min = 0.5 # DEFAULT
+  } else if (!missing(min)) {
+    if (!is.numeric(min)) {
+      stop("Min should be a numeric value from 0 to 1.")
+    } else if (is.numeric(min)) {
+      if (min < 0 || min > 1) {
+        stop("Min should be a numeric value from 0 to 1.")
+      }
+    }
+  }
+
+  sens_cor <- correlations[[sensMeasure]]   # subset correlations
+  # only keep correlations geq to min
+  cons <- sens_cor[which(sens_cor[coefName] >= min), ]
+
+  return(cons)
 }
