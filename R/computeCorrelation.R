@@ -25,24 +25,28 @@
 #' CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
 #' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
 #' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
-#' rm(CTRP)
-#' rm(GRAY)
+#' correlations <- computeCorrelation(intersected, coefs = c("pearson", "spearman"), TRUE)
 #'
-#' set.seed(1001)
-#' TO-DO***
 #'
 #'
 #' @author {Casey Hon, \email{casey.hon@mail.utoronto.ca}}
 #'
 #' @references
+#' Smirnov P, Safikhani Z, El-Hachem N, Wang D, She A, Olsen C, Freeman M,
+#'     Selby H, Gendoo D, Grossman P, Beck A, Aerts H, Lupien M, Haibe-Kains
+#'     AG, (2016). “PharmacoGx: an R package for analysis of large
+#'     pharmacogenomic datasets.” \emph{Bioinformatics (Oxford, England)}.
 #'
+#'
+#' @import PharmacoGx
+#' @import stats
 #'
 
-install.packages(c("devtools", "tidyverse", "fs", "PharmacoGx"))
-library(devtools)
-library(tidyverse)
-library(fs)
-library(PharmacoGx)
+# install.packages(c("devtools", "tidyverse", "fs", "PharmacoGx"))
+# library(devtools)
+# library(tidyverse)
+# library(fs)
+# library(PharmacoGx)
 
 computeCorrelation <- function(pSet,
                                coefs,
@@ -127,10 +131,12 @@ computeCorrelation <- function(pSet,
       setProfList[sensName] <- list(get(var_name))
     }
     profList[pset_name] <- list(setProfList)
+    assign(drugs, pSet@drug)
+    assign(cells, pSet@cell)
   }
 
-  drugs <- rownames(pSet[[1]]@drug)
-  cells <- rownames(pSet[[1]]@cell)
+  # drugs <- rownames(pSet[1]@drug)
+  # cells <- rownames(pSet[1]@cell)
 
   # initialize data frames to be outputted
   cor_list <- list()
