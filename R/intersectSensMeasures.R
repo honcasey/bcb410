@@ -2,6 +2,7 @@
 #'
 #' Given an object of intersected PharmacoSets, the function finds sensitivity
 #' measures in common.
+#'
 #' @param pSet intersected PharmacoSets of interest
 #'
 #' @return Returns a list of sensitivity measures in common.
@@ -17,9 +18,6 @@
 #'
 #' @author {Casey Hon, \email{casey.hon@mail.utoronto.ca}}
 #'
-
-
-library(PharmacoGx)
 
 intersectSensMeasures <- function(pSet) {
   measList <- list()

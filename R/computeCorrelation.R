@@ -15,9 +15,9 @@
 #' @param pval Logical of whether or not to include p-values of each
 #'     correlation coefficient. Default is TRUE.
 #'
-#' @return Returns a dataframe for each sensitivity measure of interest,
-#'     where rows correspond to drugs and columns correspond to each type
-#'     of correlation coefficient from coefs.
+#' @return Returns a list of dataframes, one dataframe for each sensitivity
+#'     measure of interest, where rows correspond to drugs and columns
+#'     correspond to each type of correlation coefficient from coefs.
 #'     Also includes p-values in columns is pval was set to TRUE.
 #'
 #' @example
@@ -48,23 +48,31 @@
 # library(fs)
 # library(PharmacoGx)
 
+# SET PVAL TO TRUE AS GLOBAL VARIABLE
 computeCorrelation <- function(pSet,
                                coefs,
                                pval) {
 
   # Performing checks
-  ## TO-DO: check if pSet is valid (contains a list of at least two pSets)
-
+  if (is.list(pSet) == TRUE) {
+    if (length(pSet) < 2) {
+      stop("pSet list should have at least two PharmacoSets to
+           compare correlations.")
+    }
+  } else if (is.list(pSet) != TRUE) {
+    stop("pSet should be of class list, which contains a list of
+         intersected PharmacoSets.")
+  }
 
   if (is.character(coefs) == TRUE) {
     coefsUsed <- c("pearson", "spearman", "kendall")
     if (all((coefs == coefsUsed) == FALSE)) {
       stop("coefs should be of class character, specifying either:
-           pearson, spearman, or kendall.")
+           pearson, spearman, and/or kendall.")
     }
   } else if (is.character(coefs) != TRUE) {
       stop("coefs should be of class character, specifying either:
-           pearson, spearman, or kendall.")
+           pearson, spearman, and/or kendall.")
   }
 
   if (is.logical(pval) != TRUE) {
