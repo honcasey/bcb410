@@ -4,7 +4,7 @@
 \alias{getConsistentCellLines}
 \title{Get list of consistent cell lines}
 \usage{
-getConsistentCellLines(correlations, sensMeasure, coefName, min)
+getConsistentCellLines(correlations, sensMeasure, coefName, min = 0.5)
 }
 \arguments{
 \item{correlations}{A list of dataframes that contain the correlation
@@ -20,7 +20,8 @@ of interest. Must be one of the coefficients included in correlations
 dataframe.}
 
 \item{min}{A numeric value representing the minimum correlation coefficient
-desired. Default is 0.5.}
+desired. All correlations greater than or equal to min are deemed
+consistent. Default is 0.5.}
 }
 \value{
 A dataframe containing only correlations of consistent cell lines.
@@ -29,6 +30,20 @@ A dataframe containing only correlations of consistent cell lines.
 Identifies cell lines that are deemed consistent based on the
     user-specified minimum correlation of sensitivity measures
     across PharmacoSets.
+}
+\examples{
+# Intersect PharmacoSets of interest based on common cell lines
+CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
+GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
+intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
+correlations <- computeCorrelation(pSet = intersected,
+    coefs = "pearson",
+    sensMeasures = "aac_recomputed",
+    pval = TRUE)
+consistentLines <- getConsistentCellLines(correlations,
+    sensMeasure = "aac_recomputed_corrs",
+    coefName = "pearson")
+
 }
 \author{
 {Casey Hon, \email{casey.hon@mail.utoronto.ca}}

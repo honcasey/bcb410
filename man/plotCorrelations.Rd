@@ -13,6 +13,8 @@ coefficients.}
 \item{coefficient}{A character vector specifying which
 correlation coefficient to plot. Must be one of the coefficients
 in correlations, as returned by names(correlations).}
+
+\item{title}{A character vector specifying the desired plot title.}
 }
 \value{
 A bar plot with coefficient values on the y-axis, and either
@@ -23,4 +25,10 @@ A bar plot with coefficient values on the y-axis, and either
 Plots correlation coefficients in bar plot from given
     dataframe, as returned by computeCellLineCorrelation
     or computeDrugCorrelation.
+}
+\examples{
+plotCorrelations(correlations$aac_recomputed_corrs,
+    "pearson",
+    "Pearson Correlations of Recomputed AAC Values")
+
 }

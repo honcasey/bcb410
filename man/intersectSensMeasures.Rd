@@ -16,6 +16,22 @@ Returns a list of sensitivity measures in common.
 Given an object of intersected PharmacoSets, the function finds sensitivity
 measures in common.
 }
+\examples{
+CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
+GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
+intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
+
+commonSensMeasures <- intersectSensMeasures(intersected)
+commonSensMeasures
+> [1] "aac_recomputed"  "ic50_recomputed" "HS"              "E_inf"           "EC50"
+
+}
+\references{
+Smirnov P, Safikhani Z, El-Hachem N, Wang D, She A, Olsen C, Freeman M,
+    Selby H, Gendoo D, Grossman P, Beck A, Aerts H, Lupien M,
+    Haibe-Kains AG, (2016). PharmacoGx: an R package for analysis of
+    large pharmacogenomic datasets. \emph{Bioinformatics (Oxford, England)}.
+}
 \author{
 {Casey Hon, \email{casey.hon@mail.utoronto.ca}}
 }

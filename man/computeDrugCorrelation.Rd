@@ -43,6 +43,29 @@ Computes Pearson, Spearman, and/or Kendall Correlation Coefficients and
     (such as IC50 of AUC) between common drugs of two or more
     PharmacoSets.
 }
+\examples{
+# Intersect PharmacoSets of interest based on common cell lines
+CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
+GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
+intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY),
+    intersectOn = c("drugs", "cell.lines"))
+
+cellLineCorrelations <- computeCorrelation(pSet = intersected,
+    coefs = "pearson",
+    sensMeasures = "aac_recomputed",
+    pval = TRUE)
+consistentLines <- getConsistentCellLines(cellLineCorrelations,
+    sensMeasure = "aac_recomputed_corrs",
+    coefName = "pearson")
+drugAllCorrelations <- computeDrugCorrelation(intersected,
+    coefs = "pearson",
+    sensMeasures = "aac_recomputed")
+drugConsistentCorrelations <- computeDrugCorrelation(intersected,
+    cellLines = rownames(consistentLines),
+    coefs = "pearson",
+    sensMeasures = "aac_recomputed")
+
+}
 \references{
 Smirnov P, Safikhani Z, El-Hachem N, Wang D, She A, Olsen C, Freeman M,
     Selby H, Gendoo D, Grossman P, Beck A, Aerts H, Lupien M, Haibe-Kains
