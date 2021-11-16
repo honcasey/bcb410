@@ -24,7 +24,7 @@
 #'     correspond to each type of correlation coefficient from coefs.
 #'     Also includes p-values in columns is pval was set to TRUE.
 #'
-#' @example
+#' @examples
 #' # Intersect PharmacoSets of interest based on common cell lines
 #' CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
 #' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")

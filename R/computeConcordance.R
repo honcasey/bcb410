@@ -32,7 +32,7 @@
 #'     the coefName correlations of sensMeasure in allCorrelations and in
 #'     subsettedCorrelations.
 #'
-#' @example
+#' @examples
 #' # Intersect PharmacoSets of interest based on common cell lines
 #' CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
 #' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")

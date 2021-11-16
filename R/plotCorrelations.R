@@ -15,13 +15,24 @@
 #'     drugs or cell lines on the x-axis depending on the correlation
 #'     dataframe inputted.
 #'
-#' @example
-#' plotCorrelations(correlations$aac_recomputed_corrs,
-#'     "pearson",
-#'     "Pearson Correlations of Recomputed AAC Values")
+#' @examples
+#' # Intersect PharmacoSets of interest based on common cell lines
+#' CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
+#' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
+#' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY),
+#'     intersectOn = c("drugs", "cell.lines"))
+#' correlations <- computeCorrelation(pSet = intersected,
+#'     coefs = "pearson",
+#'     sensMeasures = "aac_recomputed",
+#'     pval = TRUE)
+#' plotCorrelations(correlations = correlations$aac_recomputed_corrs,
+#'     coefficient = "pearson",
+#'     title = "Pearson Correlations of Recomputed AAC Values")
 #'
 
-plotCorrelations <- function(correlations, coefficient) {
+plotCorrelations <- function(correlations,
+                             coefficient,
+                             title) {
   # Performing Checks
   if (is.character(coefficient) == FALSE) {
     stop("coefficient must of class character, and must be one of the
@@ -41,7 +52,6 @@ plotCorrelations <- function(correlations, coefficient) {
   rr <- as.matrix(t(cbind(correlations[coefficient])))
   rr[!is.na(rr) & rr < 0] <- 0 # set negative values to 0
   names(rr) <- rownames(correlations)
-  # ylabel <- as.character(coefficient)
   par(mar = c(8, 5, 5, 5))
   rb <- graphics::barplot(rr,
                           beside = TRUE,
@@ -54,8 +64,11 @@ plotCorrelations <- function(correlations, coefficient) {
                           angle=c(0),
                           main = title,
                           xaxt = "n")
-  # legend("topright", legend=c("orig"), density=c(100), angle=c(0), bty="n", cex=0.75)
-  text(x=apply(rb, 2, mean) + 1.45, y=par("usr")[3] - (par("usr")[4] * 0.05) + 0.03, pos=2, labels=toupper(names(rr)), srt=45, xpd=NA, font=1, cex = 0.75)
-  # return(rb)
-
+  text(x=apply(rb, 2, mean) + 3,
+       y=par("usr")[3] - (par("usr")[4] * 0.05) + 0.03, pos=2,
+       labels=toupper(names(rr)),
+       srt=45,
+       xpd=NA,
+       font=1,
+       cex = 0.7) # x-axis label size
 }

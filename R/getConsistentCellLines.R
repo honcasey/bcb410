@@ -19,7 +19,7 @@
 #'
 #' @return A dataframe containing only correlations of consistent cell lines.
 #'
-#' @example
+#' @examples
 #' # Intersect PharmacoSets of interest based on common cell lines
 #' CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
 #' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")

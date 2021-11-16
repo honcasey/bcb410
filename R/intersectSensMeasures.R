@@ -7,7 +7,7 @@
 #'
 #' @return Returns a list of sensitivity measures in common.
 #'
-#' @example
+#' @examples
 #' CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
 #' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
 #' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
