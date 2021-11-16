@@ -9,13 +9,16 @@
 #' @param coefficient A character vector specifying which
 #'     correlation coefficient to plot. Must be one of the coefficients
 #'     in correlations, as returned by names(correlations).
+#' @param title A character vector specifying the desired plot title.
 #'
 #' @return A bar plot with coefficient values on the y-axis, and either
 #'     drugs or cell lines on the x-axis depending on the correlation
 #'     dataframe inputted.
 #'
 #' @example
-#' plotCorrelations(correlations$aac_recomputed_corrs, "pearson")
+#' plotCorrelations(correlations$aac_recomputed_corrs,
+#'     "pearson",
+#'     "Pearson Correlations of Recomputed AAC Values")
 #'
 
 plotCorrelations <- function(correlations, coefficient) {
@@ -45,10 +48,11 @@ plotCorrelations <- function(correlations, coefficient) {
                           space = c(0.1, 2),
                           col=rep(rainbow(length(rr), v=0.9),
                                   each=2),
-                          ylab= coefficient,
+                          ylab= paste(coefficient, "correlation coefficient", sep = ' '),
                           ylim = c(0, 1),
                           density=c(100) ,
                           angle=c(0),
+                          main = title,
                           xaxt = "n")
   # legend("topright", legend=c("orig"), density=c(100), angle=c(0), bty="n", cex=0.75)
   text(x=apply(rb, 2, mean) + 1.45, y=par("usr")[3] - (par("usr")[4] * 0.05) + 0.03, pos=2, labels=toupper(names(rr)), srt=45, xpd=NA, font=1, cex = 0.75)

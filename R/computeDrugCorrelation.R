@@ -4,6 +4,7 @@
 #'     associated p-values for specified drug sensitivity measures
 #'     (such as IC50 of AUC) between common drugs of two or more
 #'     PharmacoSets.
+#'
 #' @param pSet Intersected PharmacoSet object containing common drugs and/or
 #'     cell lines, as returned by PharmacoGx::intersectPSet(). PharmacoSets
 #'     should have sensitivity information which can be checked using
@@ -159,8 +160,15 @@ computeDrugCorrelation <- function(pSet,
       setProfList[sensName] <- list(get(var_name))
     }
     profList[pset_name] <- list(setProfList)
-    assign(drugs, tempPSet@drug) # IGNORE THESE WARNINGS
-    assign(cells, tempPSet@cell)
+    tryCatch(
+      expr = {
+        assign(drugs, tempPSet@drug) # IGNORE THESE WARNINGS
+        assign(cells, tempPSet@cell)
+      },
+      error = {function(e) {
+        # ignore
+      }}
+    )
   }
 
   # initialize data frames to be outputted
@@ -223,7 +231,7 @@ computeDrugCorrelation <- function(pSet,
           },
           error = {function(e) {
             message(drug, " does not have enough finite observations to compute
-                a correlation.")
+                a correlation, so is left as NA.")
           }
           }
         )

@@ -1,0 +1,64 @@
+---
+title: "cellLineConsistency"
+author: "Casey Hon"
+date: "`r format(Sys.time(), '%d %b %Y')`"
+output: 
+    rmarkdown::html_vignette:
+      toc: true
+      number_sections: false
+vignette: >
+  %\VignetteIndexEntry{cellLineConsistency}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include = FALSE}
+library(cellLineConsistency)
+
+```
+
+## Introduction
+Cancer cell lines are the most commonly used models in cancer biology studies for validating cancer targets and defining drug efficacy. Given that patients have such differing responses to the drugs with widely varying effects, there has been an increasing interest in the shift of medicine from a population-level to patient-specific level, particularly focused on identifying biomarkers of treatment response. 
+
+One challenge of oncogenic biomarker identification lies in contradictory results from past studies, which have recorded different outcomes from exposure of a same set of cancer cells to the same treatment (Güvenç Paltun et al., 2019). Pharmacogenomics allows for identifying the genomic variants that cause different responses to a particular treatment. These differing responses can be quantified by drug sensitivity measures such as “half maximal inhibitory concentration” (IC50) and “Area Above the Curve” (AAC), which allow for analyzing responses to a range of anticancer agents at variable doses.
+
+Several experiments outlining drug dose response profiles of cancer cell lines have been conducted, such as the Cancer Cell Line Encyclopedia (CCLE) (Barretina et al., 2012) and the Genomics of Drug Sensitivity in Cancer Project (GDSC) (Yang et al., 2013). The *PharmacoGx* package was developed to simplify metaanalyses by standardizing data organization for large, publicly available, cancer cell line datasets (Smirnov et al., 2016). An overlap between the common cell lines and drugs in studies based on the data from GDSC and CCLE has allowed for the assessment of drug sensitivity consistency across the datasets. However, no package exists to standardize the computation of consistency values, which hinders our ability to know how dependable the information derived from these cell lines is.
+
+`cellLineConsistency` is an R package developed to identify cancer cell lines that have consistent drug sensitivity measures, and provide a quantifiable measure of consistency using a concordance index. The package is targeted for pharmacogenomics researchers looking to use cancer cell line studies, and would like a quantifiable measure of how consistent the cell lines are across datasets. 
+
+'cellLineConsistency' contains 6 functions that can be used in identifying and quantifying consistent cancer cell lines. The *intersectSensMeasures* function identifies sensitivity measures common to all datasets of interest. The *computeCellLineCorrelation* function computes correlation coefficients of cell line drug sensitivity measures across datasets. The *computeDrugCorrelation* function computes correlation coefficients by drugs across datasets. The *getConsistentCellLines* function subsets cell lines deemed as consistent based on a user-specified minimum correlation. The *computeConcordance* function computes Harrell's Concordance Index to quantify improvement in consistency between the correlations of the original and subsetted cell lines. *plotCorrelations* generates a barplot to compare cell line/drug correlations. Refer to package vignette for more details.
+
+**This document gives a tour of cellLineConsistency (version 0.1.0) functionalities**. It was written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr) package for production. 
+
+See `help(package = "cellLineConsistency")` for further details.
+
+To download **cellLineConsistency**, use the following commands:
+
+``` r
+require("devtools")
+install_github("honcasey/cellLineConsistency", build_vignettes = TRUE)
+library("cellLineConsistency")
+```
+To list all sample functions available in the package:
+``` r
+ls("package:cellLineConsistency")
+```
+<br>
+
+## Details
+
+
+## References
+* Barretina J, Caponigro G, Stransky N, Venkatesan K, Margolin A, Kim S, Wilson C, Lehár J, Kryukov G, Sonkin D, et al., (2012). The Cancer Cell Line Encyclopedia enables predictive modelling of anticancer drug sensitivity. *Nature*. 483(7391), 603-7.
+
+* Güvenç Paltun, B., Mamitsuka, H. & Kaski, S (2019). Improving drug response prediction by integrating multiple data sources: matrix factorization, kernel and network-based approaches. *Briefings in Bioinformatics*. doi:10.1093/bib/bbz153.
+
+* Smirnov P, Safikhani Z, El-Hachem N, Wang D, She A, Olsen C, Freeman M, Selby H, Gendoo D, Grossman P, Beck A, Aerts H, Lupien M, Haibe-Kains AG, (2016). PharmacoGx: an R package for analysis of large pharmacogenomic datasets. *Bioinformatics (Oxford, England)*.
+
+* Yang W, Soares J, Greninger P, Edelman EJ, Lightfoot H, Forbes S, Bindal N, Beare D, Smith JA, Thompson IR, Ramaswamy S, Futreal PA, Haber DA, Stratton MR, Benes C, McDermott U and Garnett MJ, (2013). Genomics of Drug Sensitivity in Cancer (GDSC): a resource for therapeutic biomarker discovery in cancer cells. *Nucleic acids research*. 41(D1), D955-D961. 
+
+----
+```{r}
+sessionInfo()
+```

@@ -5,7 +5,10 @@
 #' C-index, also known as the concordance index, is a goodness of fit
 #' measure commonly used to evaluate risk models in survival analysis.
 #' To measure the concordance, the number of concordant and discordant pairs
-#' is used. A value between 0 and 1 is returned, where a value below 0.5
+#' is used.  Concordant and discordant pairs are used to describe the
+#' relationship between pairs of observations, which in this case is the pair
+#' of the sensitivity measures reported in each of the two studies. A value
+#' between 0 and 1 is returned, where a value below 0.5
 #' indicates a very poor model, a value of 0.5 indicates that the model
 #' predicts at the same accuracy as random chance, and a value of 1
 #' indicates that the model’s prediction accuracy is perfect. The concordance

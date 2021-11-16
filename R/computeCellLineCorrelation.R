@@ -140,8 +140,15 @@ computeCellLineCorrelation <- function(pSet,
       setProfList[sensName] <- list(get(var_name))
     }
     profList[pset_name] <- list(setProfList)
-    assign(drugs, tempPSet@drug) # IGNORE THESE WARNINGS
-    assign(cells, tempPSet@cell)
+    tryCatch(
+      expr = {
+        assign(drugs, tempPSet@drug) # IGNORE THESE WARNINGS
+        assign(cells, tempPSet@cell)
+      },
+      error = {function(e) {
+        # ignore
+      }}
+    )
   }
 
   # initialize data frames to be outputted
@@ -204,7 +211,7 @@ computeCellLineCorrelation <- function(pSet,
     },
       error = {function(e) {
         message(cell.line, " does not have enough finite observations to compute
-                a correlation.")
+                a correlation, so is left as NA.")
       }
       }
     )
