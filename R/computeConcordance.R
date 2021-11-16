@@ -16,8 +16,9 @@
 #'     of interest. Must be one of the coefficients included in the
 #'     correlations parameter.
 #'
-#' @return Returns a dataframe outlining concordance indices, where rows
-#'     are ??? and columns are ???
+#' @return Returns an S3 concordance object outlining concordance between
+#'     the coefName correlations of sensMeasure in allCorrelations and in
+#'     subsettedCorrelations.
 #'
 #' @example
 #' # Intersect PharmacoSets of interest based on common cell lines
@@ -102,18 +103,15 @@ computeConcordance <- function(allCorrelations,
          names(correlations[[\"sensMeasure\"]]).")
   }
 
-
   toSurv <- transform(merge(allCorrelations[sensMeasure],
                             subsettedCorrelations[sensMeasure],
                             by = 0,
                             all = TRUE), row.names=Row.names, Row.names=NULL)
-  concorded <- survival::concordance(object = paste0(sensMeasure, "pearson.x") ~ paste0(sensMeasure, "pearson.y"),
+
+  concorded <- survival::concordance(object = get(paste0(sensMeasure, ".pearson.x"))
+                                     ~ get(paste0(sensMeasure, ".pearson.y")),
                                    data = toSurv)
 
+  return(concorded)
 }
-
-
-
-
-
 
