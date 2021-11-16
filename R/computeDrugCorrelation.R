@@ -30,9 +30,12 @@
 #' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
 #' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY),
 #'     intersectOn = c("drugs", "cell.lines"))
-#' cellLineCorrelations <- computeCellLineCorrelation(intersected,
-#'     coefs = c("pearson", "spearman"), TRUE)
-#' consistentLines <- getConsistentCellLines(correlations,
+#'
+#' cellLineCorrelations <- computeCorrelation(pSet = intersected,
+#'     coefs = "pearson",
+#'     sensMeasures = "aac_recomputed",
+#'     pval = TRUE)
+#' consistentLines <- getConsistentCellLines(cellLineCorrelations,
 #'     sensMeasure = "aac_recomputed_corrs",
 #'     coefName = "pearson")
 #' drugAllCorrelations <- computeDrugCorrelation(intersected,
@@ -135,9 +138,9 @@ computeDrugCorrelation <- function(pSet,
   }
 
   if (is.character(cellLines) == TRUE) {
-    if (cellLines == "all") { # DEFAULT - keep all common cell lines
+    if (missing(cellLines)) { # DEFAULT - keep all common cell lines
       cellLines <- rownames(pSet[[1]]@cell)
-    } else if (cellLines != "all") {
+    } else if (!missing(cellLines)) {
       linesUsed <- rownames(pSet[[1]]@cell)
       if (all((cellLines == linesUsed) == FALSE)) {
         stop("cellLines must be a subset of cell lines in the intersected

@@ -51,7 +51,7 @@
 #'     sensMeasures = "aac_recomputed")
 #' concordance <- computeConcordance(allCorrelations = drugAllCorrelations,
 #'     subsettedCorrelations = drugConsistentCorrelations,
-#'     sensMeasure = "aac_recomputed",
+#'     sensMeasure = "aac_recomputed_corrs",
 #'     coefName = "pearson")
 #'
 #' @author {Casey Hon, \email{casey.hon@mail.utoronto.ca}}
@@ -100,29 +100,29 @@ computeConcordance <- function(allCorrelations,
   }
 
   if (is.character(sensMeasure) == TRUE) {
-    sensUsed <- names(correlations)
+    sensUsed <- names(allCorrelations)
     if ((sensMeasure %in% sensUsed) == FALSE) {
       stop("sensMeasure must be one of the measures included in correlations
-           as returned by names(correlations).")
+           as returned by names(allCorrelations).")
     }
   } else if (is.character(sensMeasure) == FALSE) {
     stop("sensMeasure must be of class character specifying one of the
          measures included in correlations as returned by
-         names(correlations).")
+         names(allCorrelations).")
   }
   # TO-DO: check if sensMeasure exists in both correlation dataframes
 
   if (is.character(coefName) == TRUE) {
-    coefUsed <- names(correlations[[sensUsed]])
-    if (all(coefName == coefUsed) == FALSE) {
+    coefUsed <- names(allCorrelations[[sensMeasure]])
+    if (all((coefName == coefUsed) == FALSE)) {
       stop("coefName must be one of the correlation coefficients included
            in correlations, as returned by
-           names(correlations[[\"sensMeasure\"]]).")
+           names(allCorrelations[[\"sensMeasure\"]]).")
     }
   } else if (is.character(coefName) == FALSE) {
     stop("coefName must be of class character specifying one of the correlation
          coefficients included in correlations, as returned by
-         names(correlations[[\"sensMeasure\"]]).")
+         names(allCorrelations[[\"sensMeasure\"]]).")
   }
 
   toSurv <- transform(merge(allCorrelations[sensMeasure],

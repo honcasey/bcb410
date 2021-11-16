@@ -24,7 +24,10 @@
 #' CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
 #' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
 #' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
-#' correlations <- computeCorrelation(intersected, coefs = c("pearson", "spearman"), TRUE)
+#' correlations <- computeCorrelation(pSet = intersected,
+#'     coefs = "pearson",
+#'     sensMeasures = "aac_recomputed",
+#'     pval = TRUE)
 #' consistentLines <- getConsistentCellLines(correlations,
 #'     sensMeasure = "aac_recomputed_corrs",
 #'     coefName = "pearson")
@@ -35,7 +38,7 @@
 getConsistentCellLines <- function(correlations,
                                    sensMeasure,
                                    coefName,
-                                   min) {
+                                   min = 0.5) {
 
   # Performing Checks
   if (is.list(correlations) == TRUE) {

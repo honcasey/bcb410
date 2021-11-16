@@ -25,8 +25,12 @@
 #' # Intersect PharmacoSets of interest based on common cell lines
 #' CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
 #' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
-#' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
-#' correlations <- computeCorrelation(intersected, coefs = c("pearson", "spearman"), TRUE)
+#' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY),
+#'     intersectOn = c("drugs", "cell.lines"))
+#' correlations <- computeCorrelation(pSet = intersected,
+#'     coefs = "pearson",
+#'     sensMeasures = "aac_recomputed",
+#'     pval = TRUE)
 #'
 #'
 #'
