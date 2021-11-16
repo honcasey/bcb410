@@ -47,6 +47,8 @@ ls("package:cellLineConsistency")
 <br>
 
 ## Details
+Correlation Coefficients like Pearson, Spearman, and Kendall correlations can be used to quantify the linear association between drug sensitivity measures across datasets. Thus, by computing the correlations between datasets for each cell line, we can identify which cell lines had poor consistency, as defined by having a correlation coefficient of less than 0.5 (or another value which can be specified by the user). Then, by removing these inconsistent cell lines, the consistency of cell line drug sensitivity measures across datasets should improve. To quantify this improvement, we use Harrell's C-index and provide a concordance measure.
+
 Here is an example workflow to identify consistent cell lines between the CTRPv2 (Seashore-Ludlow et al., 2015; Rees et al., 2016) and GRAY (Daemen et al., 2013; Hafner et al., 2017) PharmacoSets. Specifically, we want to see how the recomputed Area Above the Curve (aac_recomputed) values of the common cell lines between CTRP and GRAY compare across the two datasets, get the list of which cell lines are consistent, and quantify how consistency changes when we remove the inconsistent cell lines.
 
 First, we use the *PharmacoGx* package to download and intersect the two PharmacoSets based on their common cell lines and drugs.
@@ -102,6 +104,14 @@ View(concordance)
 ```
 Finally, we have a quantifiable value of 0.8, with 454 concordant pairs and 107 discordant pairs after we removed the inconsistent cell lines. Since the concordance is closer to 1, we know that the remaining cell lines have pretty high consistency across the two datasets. Thus, we can have confidence in using these 17 cell lines for further studies.
 
+## Plotting
+To visualize the correlations, we can use *plotCorrelations*.
+```r
+plotCorrelations(correlations = drugAllCorrelations$aac_recomputed_corrs,
+    coefficient = "pearson",
+    title = "Pearson Correlations of Recomputed AAC Values")
+```
+![](~/cellLineConsistency/vignettes/plotCorrelations-example.png)
 <br>
 
 ## References
