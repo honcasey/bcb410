@@ -1,12 +1,15 @@
-#' Compute correlations between drug sensitivity measures of cell lines
+#' Compute correlations between drugs sensitivity measures
 #'
-#' Computes Pearson and Spearman Correlation Coefficients for specified
-#'     drug sensitivity measures (such as IC50 of AUC) and specified
-#'     subset of cell lines
+#' Computes Pearson, Spearman, and/or Kendall Correlation Coefficients and
+#'     associated p-values for specified drug sensitivity measures
+#'     (such as IC50 of AUC) between common drugs of two or more
+#'     PharmacoSets.
 #' @param pSet Intersected PharmacoSet object containing common drugs and/or
 #'     cell lines, as returned by PharmacoGx::intersectPSet(). PharmacoSets
 #'     should have sensitivity information which can be checked using
 #'     PharmacoGx::availablePSets() in the 'type' column.
+#' @param cellLines List of cell lines to keep in analysis. Default is all
+#'     common cell lines between PharmacoSets given in pSet ("all").
 #' @param coefs List of correlation coefficients of interest. Current options
 #'     are: "pearson", "spearman", "kendall".
 #' @param sensMeasures List of drug sensitivity measures of interest. Options
@@ -24,10 +27,20 @@
 #' # Intersect PharmacoSets of interest based on common cell lines
 #' CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
 #' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
-#' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
-#' correlations <- computeCorrelation(intersected, coefs = c("pearson", "spearman"), TRUE)
-#'
-#'
+#' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY),
+#'     intersectOn = c("drugs", "cell.lines"))
+#' cellLineCorrelations <- computeCellLineCorrelation(intersected,
+#'     coefs = c("pearson", "spearman"), TRUE)
+#' consistentLines <- getConsistentCellLines(correlations,
+#'     sensMeasure = "aac_recomputed_corrs",
+#'     coefName = "pearson")
+#' drugAllCorrelations <- computeDrugCorrelation(intersected,
+#'     coefs = "pearson",
+#'     sensMeasures = "aac_recomputed")
+#' drugConsistentCorrelations <- computeDrugCorrelation(intersected,
+#'     cellLines = rownames(consistentLines),
+#'     coefs = "pearson",
+#'     sensMeasures = "aac_recomputed")
 #'
 #' @author {Casey Hon, \email{casey.hon@mail.utoronto.ca}}
 #'
@@ -42,16 +55,11 @@
 #' @import stats
 #'
 
-# install.packages(c("devtools", "tidyverse", "fs", "PharmacoGx"))
-# library(devtools)
-# library(tidyverse)
-# library(fs)
-# library(PharmacoGx)
-
-# SET PVAL TO TRUE AS GLOBAL VARIABLE
-computeCorrelation <- function(pSet,
-                               coefs,
-                               pval) {
+computeDrugCorrelation <- function(pSet,
+                                   cellLines = "all",
+                                   coefs,
+                                   sensMeasures,
+                                   pval = TRUE) {
 
   # Performing checks
   if (is.list(pSet) == TRUE) {
@@ -71,16 +79,11 @@ computeCorrelation <- function(pSet,
            pearson, spearman, and/or kendall.")
     }
   } else if (is.character(coefs) != TRUE) {
-      stop("coefs should be of class character, specifying either:
+    stop("coefs should be of class character, specifying either:
            pearson, spearman, and/or kendall.")
   }
-  if (missing(pval) == TRUE) {
-    pval == TRUE # default
-  }
-  else if (missing(pval) == FALSE) {
-    if (is.logical(pval) != TRUE) {
-      stop("pval should be of class logical, specifying either TRUE or FALSE.")
-    }
+  if (is.logical(pval) != TRUE) {
+    stop("pval should be of class logical, specifying either TRUE or FALSE.")
   }
 
   # separate each pset after intersection
@@ -130,33 +133,43 @@ computeCorrelation <- function(pSet,
     }
   }
 
+  if (is.character(cellLines) == TRUE) {
+    if (cellLines == "all") { # DEFAULT - keep all common cell lines
+      cellLines <- rownames(pSet[[1]]@cell)
+    } else if (cellLines != "all") {
+      linesUsed <- rownames(pSet[[1]]@cell)
+      if (all((cellLines == linesUsed) == FALSE)) {
+        stop("cellLines must be a subset of cell lines in the intersected
+             PharmacoSet, or \"all\". ")
+      }
+    }
+  }
+
   # get sensitivity profiles for each sensitivity measure for each pset
   profList <- list() # list of each psets sensitivity profiles
-  for (pSet in pSet) {
+  for (tempPSet in pSet) {
     setProfList <- list() # list sensitivity profiles of current pset
     for (sensName in sensMeasures) {
-      pset_name <- pSet@annotation[["name"]]
+      pset_name <- tempPSet@annotation[["name"]]
       var_name <- paste(sensName, pset_name, sep = "_")
-      prof <- PharmacoGx::summarizeSensitivityProfiles(pSet,
-                                                       sensitivity.measure = sensName)
+      prof <- PharmacoGx::summarizeSensitivityProfiles(tempPSet,
+                                                       sensitivity.measure = sensName,
+                                                       cell.lines = cellLines)
       assign(var_name, as.data.frame(prof), envir = globalenv())
       setProfList[sensName] <- list(get(var_name))
     }
     profList[pset_name] <- list(setProfList)
-    assign(drugs, pSet@drug)
-    assign(cells, pSet@cell)
+    assign(drugs, tempPSet@drug) # IGNORE THESE WARNINGS
+    assign(cells, tempPSet@cell)
   }
-
-  # drugs <- rownames(pSet[1]@drug)
-  # cells <- rownames(pSet[1]@cell)
 
   # initialize data frames to be outputted
   cor_list <- list()
   for (sens in sensMeasures) {
     cors <- data.frame(matrix(ncol = length(coefs) * ncol(pSetPairs),
-                             # columns are each type of correlation coefficient
-                             nrow = length(cells)),
-                             row.names = cells)
+                              # columns are each type of correlation coefficient
+                              nrow = length(drugs)),
+                       row.names = drugs)
     colnames(cors) <- coefs
     var_name <- paste(sens, "corrs", sep = '_')
     assign(var_name, cors, envir = globalenv())
@@ -168,55 +181,54 @@ computeCorrelation <- function(pSet,
     set1 <- profList[[pSetPairs[1, pair][[1]]]]
     set2 <- profList[[pSetPairs[2, pair][[1]]]]
     for (sens in sensMeasures) { # each sensitivity measure (aac, ic50)
-      for (cell.line in rownames(cors)) { # each cell line
+      for (drug in drugs) { # each cell line
         tryCatch(
           expr = {
-      tofill <- get(paste(sens, "corrs", sep = '_'))
-      set1sens <- as.numeric(unlist(set1[[sens]][cell.line]))
-      set2sens <- as.numeric(unlist(set2[[sens]][cell.line]))
-      # PEARSON CORRELATION
-      if ("pearson" %in% coefs) {
-        pearson.cor <- stats::cor.test(set1sens, set2sens,
-                                method = 'pearson',
-                                use = 'pairw')
-        tofill[cell.line, "pearson"] <- pearson.cor$estimate
-        if ("pearson p-value" %in% coefs) {
-          tofill[cell.line, "pearson p-value"] <- pearson.cor$p.value
-        }
-      }
-      # SPEARMAN CORRELATION
-      if ("spearman" %in% coefs) {
-        spearman.cor <- stats::cor.test(set1sens, set2sens,
-                                 method = 'spearman',
-                                 use = 'pairw')
-        tofill[cell.line, "spearman"] <- spearman.cor$estimate
-        if ("spearman p-value" %in% coefs) {
-          tofill[cell.line, "spearman p-value"] <- spearman.cor$p.value
-        }
-      }
-      # KENDALL CORRELATION
-      if ("kendall" %in% coefs) {
-        kendall.cor <- stats::cor.test(set1sens, set2sens,
-                                        method = 'kendall',
-                                        use = 'pairw')
-        tofill[cell.line, "kendall"] <- kendall.cor$estimate
-        if ("kendall p-value" %in% coefs) {
-          tofill[cell.line, "kendall p-value"] <- kendall.cor$p.value
-        }
-      }
-      curr_sens <- paste(sens, "corrs", sep = "_")
-      assign(curr_sens, tofill, envir = globalenv())
-      cor_list[[curr_sens]] <- get(curr_sens)
-    },
-      error = {function(e) {
-        message(cell.line, " does not have enough finite observations to compute
+            tofill <- get(paste(sens, "corrs", sep = '_'))
+            set1sens <- as.numeric(unlist(set1[[sens]][drug, ]))
+            set2sens <- as.numeric(unlist(set2[[sens]][drug, ]))
+            # PEARSON CORRELATION
+            if ("pearson" %in% coefs) {
+              pearson.cor <- stats::cor.test(set1sens, set2sens,
+                                             method = 'pearson',
+                                             use = 'pairw')
+              tofill[drug, "pearson"] <- pearson.cor$estimate
+              if ("pearson p-value" %in% coefs) {
+                tofill[drug, "pearson p-value"] <- pearson.cor$p.value
+              }
+            }
+            # SPEARMAN CORRELATION
+            if ("spearman" %in% coefs) {
+              spearman.cor <- stats::cor.test(set1sens, set2sens,
+                                              method = 'spearman',
+                                              use = 'pairw')
+              tofill[drug, "spearman"] <- spearman.cor$estimate
+              if ("spearman p-value" %in% coefs) {
+                tofill[drug, "spearman p-value"] <- spearman.cor$p.value
+              }
+            }
+            # KENDALL CORRELATION
+            if ("kendall" %in% coefs) {
+              kendall.cor <- stats::cor.test(set1sens, set2sens,
+                                             method = 'kendall',
+                                             use = 'pairw')
+              tofill[drug, "kendall"] <- kendall.cor$estimate
+              if ("kendall p-value" %in% coefs) {
+                tofill[drug, "kendall p-value"] <- kendall.cor$p.value
+              }
+            }
+            curr_sens <- paste(sens, "corrs", sep = "_")
+            assign(curr_sens, tofill, envir = globalenv())
+            cor_list[[curr_sens]] <- get(curr_sens)
+          },
+          error = {function(e) {
+            message(drug, " does not have enough finite observations to compute
                 a correlation.")
-      }
-      }
-    )
+          }
+          }
+        )
       }
     }
-
   }
 
   return(cor_list)

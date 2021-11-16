@@ -13,7 +13,8 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/honcasey/cellLineConsistency
 Imports:
-    PharmacoGx
+    PharmacoGx,
+    survival
 RoxygenNote: 7.1.2
 Suggests: 
     testthat (>= 3.0.0)

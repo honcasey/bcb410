@@ -18,7 +18,12 @@ by getConsistentCellLines().}
 measure of interest. Must be one of the measures included in
 correlations parameter.}
 
-\item{coef}{A character vector specifying the correlation coefficient
+\item{pSet}{Intersected PharmacoSet object containing common drugs and/or
+cell lines, as returned by PharmacoGx::intersectPSet(). PharmacoSets
+should have sensitivity information which can be checked using
+PharmacoGx::availablePSets() in the 'type' column.}
+
+\item{coefName}{A character vector specifying the correlation coefficient
 of interest. Must be one of the coefficients included in the
 correlations parameter.}
 }
