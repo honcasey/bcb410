@@ -4,32 +4,34 @@
 \alias{computeConcordance}
 \title{Compute consistency between correlations of cell line sensitivity measures}
 \usage{
-computeConcordance(correlations, cellLines, sensMeasure, coef)
+computeConcordance(
+  allCorrelations,
+  subsettedCorrelations,
+  sensMeasure,
+  coefName
+)
 }
 \arguments{
-\item{correlations}{A list of dataframes that contain the correlation
-coefficients of the sensitivity measures of interest, as returned
-by computeCorrelation().}
+\item{allCorrelations}{A list of dataframes that contain the correlation
+coefficients across drugs for all
+cell lines, as returned by computeDrugCorrelation().}
 
-\item{cellLines}{A list of cell lines deemed consistent, as returned
-by getConsistentCellLines().}
+\item{subsettedCorrelations}{A list of dataframes that contain the
+correlation coefficients across drugs
+for only subsetted cell lines, as returned by computeDrugCorrelation().}
 
 \item{sensMeasure}{A character vector specifying the sensitivity
 measure of interest. Must be one of the measures included in
 correlations parameter.}
-
-\item{pSet}{Intersected PharmacoSet object containing common drugs and/or
-cell lines, as returned by PharmacoGx::intersectPSet(). PharmacoSets
-should have sensitivity information which can be checked using
-PharmacoGx::availablePSets() in the 'type' column.}
 
 \item{coefName}{A character vector specifying the correlation coefficient
 of interest. Must be one of the coefficients included in the
 correlations parameter.}
 }
 \value{
-Returns a dataframe outlining concordance indices, where rows
-    are ??? and columns are ???
+Returns an S3 concordance object outlining concordance between
+    the coefName correlations of sensMeasure in allCorrelations and in
+    subsettedCorrelations.
 }
 \description{
 Computes Harrell's Concordance Index between drug sensitivity measures

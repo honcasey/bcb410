@@ -4,7 +4,7 @@
 \alias{getConsistentCellLines}
 \title{Get list of consistent cell lines}
 \usage{
-getConsistentCellLines(correlations, sensMeasure, min)
+getConsistentCellLines(correlations, sensMeasure, coefName, min)
 }
 \arguments{
 \item{correlations}{A list of dataframes that contain the correlation
@@ -15,12 +15,12 @@ by computeCorrelation().}
 of interest. Must be one of the measures included in the correlations
 dataframe.}
 
-\item{min}{A numeric value representing the minimum correlation coefficient
-desired. Default is 0.5.}
-
 \item{coefName}{A character vector defining the correlation coefficient
 of interest. Must be one of the coefficients included in correlations
 dataframe.}
+
+\item{min}{A numeric value representing the minimum correlation coefficient
+desired. Default is 0.5.}
 }
 \value{
 A dataframe containing only correlations of consistent cell lines.
