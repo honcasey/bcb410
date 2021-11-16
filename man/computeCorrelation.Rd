@@ -23,9 +23,9 @@ depend on the PharmacoSets chosen, and can be identified by looking at
 names(pSetName@sensitivity[["profiles"]])}
 }
 \value{
-Returns a dataframe for each sensitivity measure of interest,
-    where rows correspond to drugs and columns correspond to each type
-    of correlation coefficient from coefs.
+Returns a list of dataframes, one dataframe for each sensitivity
+    measure of interest, where rows correspond to drugs and columns
+    correspond to each type of correlation coefficient from coefs.
     Also includes p-values in columns is pval was set to TRUE.
 }
 \description{
@@ -34,7 +34,10 @@ Computes Pearson and Spearman Correlation Coefficients for specified
     subset of cell lines
 }
 \references{
-
+Smirnov P, Safikhani Z, El-Hachem N, Wang D, She A, Olsen C, Freeman M,
+    Selby H, Gendoo D, Grossman P, Beck A, Aerts H, Lupien M, Haibe-Kains
+    AG, (2016). “PharmacoGx: an R package for analysis of large
+    pharmacogenomic datasets.” \emph{Bioinformatics (Oxford, England)}.
 }
 \author{
 {Casey Hon, \email{casey.hon@mail.utoronto.ca}}

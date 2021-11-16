@@ -74,9 +74,13 @@ computeCorrelation <- function(pSet,
       stop("coefs should be of class character, specifying either:
            pearson, spearman, and/or kendall.")
   }
-
-  if (is.logical(pval) != TRUE) {
-    stop("pval should be of class logical, specifying either TRUE or FALSE.")
+  if (missing(pval) == TRUE) {
+    pval == TRUE # default
+  }
+  else if (missing(pval) == FALSE) {
+    if (is.logical(pval) != TRUE) {
+      stop("pval should be of class logical, specifying either TRUE or FALSE.")
+    }
   }
 
   # separate each pset after intersection
@@ -214,7 +218,6 @@ computeCorrelation <- function(pSet,
     }
 
   }
-
 
   return(cor_list)
 

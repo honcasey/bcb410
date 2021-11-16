@@ -25,7 +25,7 @@
 #' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
 #' correlations <- computeCorrelation(intersected, coefs = c("pearson", "spearman"), TRUE)
 #'
-#' consistentLines <- getConsistentCellLines(correlations, "aac_recomputed_corrs")
+#' consistentLines <- getConsistentCellLines(correlations, "aac_recomputed_corrs", "pearson")
 #'
 #' @author {Casey Hon, \email{casey.hon@mail.utoronto.ca}}
 #'
@@ -70,7 +70,7 @@ getConsistentCellLines <- function(correlations, sensMeasure, min) {
          names(correlations[[\"sensMeasure\"]]).")
   }
 
-  if (missing(min)) {
+  if (missing(min) == TRUE) {
     min = 0.5 # DEFAULT
   } else if (!missing(min)) {
     if (!is.numeric(min)) {
