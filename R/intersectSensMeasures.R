@@ -18,6 +18,14 @@
 #'
 #' @author {Casey Hon, \email{casey.hon@mail.utoronto.ca}}
 #'
+#' @references
+#' Smirnov P, Safikhani Z, El-Hachem N, Wang D, She A, Olsen C, Freeman M,
+#'     Selby H, Gendoo D, Grossman P, Beck A, Aerts H, Lupien M,
+#'     Haibe-Kains AG, (2016). PharmacoGx: an R package for analysis of
+#'     large pharmacogenomic datasets. \emph{Bioinformatics (Oxford, England)}.
+#'
+#' @import PharmacoGx
+#'
 
 intersectSensMeasures <- function(pSet) {
   measList <- list()

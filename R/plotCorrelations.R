@@ -14,6 +14,9 @@
 #'     drugs or cell lines on the x-axis depending on the correlation
 #'     dataframe inputted.
 #'
+#' @example
+#' plotCorrelations(correlations$aac_recomputed_corrs, "pearson")
+#'
 
 plotCorrelations <- function(correlations, coefficient) {
   # Performing Checks

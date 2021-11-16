@@ -14,7 +14,8 @@
 #'     of interest. Must be one of the coefficients included in correlations
 #'     dataframe.
 #' @param min A numeric value representing the minimum correlation coefficient
-#'     desired. Default is 0.5.
+#'     desired. All correlations greater than or equal to min are deemed
+#'     consistent. Default is 0.5.
 #'
 #' @return A dataframe containing only correlations of consistent cell lines.
 #'
