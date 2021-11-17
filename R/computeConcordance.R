@@ -80,8 +80,7 @@ computeConcordance <- function(allCorrelations,
   if (is.list(allCorrelations) == TRUE) {
     if (all(lapply(allCorrelations, class) != "data.frame")) {
       stop("All items in allCorrelations should be dataframes containing
-           computed correlation coefficients for your sensitivity
-           measure of interest, as returned by computeCorrelation().")
+           computed correlations for your sensitivity measure.")
     }
   } else if (is.list(allCorrelations) == FALSE) {
     stop("allCorrelations should be of class list containing dataframes
@@ -104,27 +103,23 @@ computeConcordance <- function(allCorrelations,
   if (is.character(sensMeasure) == TRUE) {
     sensUsed <- names(allCorrelations)
     if ((sensMeasure %in% sensUsed) == FALSE) {
-      stop("sensMeasure must be one of the measures included in correlations
-           as returned by names(allCorrelations).")
+      stop("sensMeasure must be one of the measures included in correlations.")
     }
   } else if (is.character(sensMeasure) == FALSE) {
     stop("sensMeasure must be of class character specifying one of the
-         measures included in correlations as returned by
-         names(allCorrelations).")
+         measures included in correlations.")
   }
   # TO-DO: check if sensMeasure exists in both correlation dataframes
 
   if (is.character(coefName) == TRUE) {
     coefUsed <- names(allCorrelations[[sensMeasure]])
-    if (all((coefName == coefUsed) == FALSE)) {
+    if (all((coefName %in% coefUsed) == FALSE)) {
       stop("coefName must be one of the correlation coefficients included
-           in correlations, as returned by
-           names(allCorrelations[[\"sensMeasure\"]]).")
+           in correlations.")
     }
   } else if (is.character(coefName) == FALSE) {
     stop("coefName must be of class character specifying one of the correlation
-         coefficients included in correlations, as returned by
-         names(allCorrelations[[\"sensMeasure\"]]).")
+         coefficients included in correlations.")
   }
 
   toSurv <- transform(merge(allCorrelations[sensMeasure],
