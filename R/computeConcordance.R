@@ -38,15 +38,17 @@
 #' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
 #' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY),
 #'     intersectOn = c("drugs", "cell.lines"))
-#' correlations <- computeCellLineCorrelation(intersected,
-#'     coefs = c("pearson", "spearman"), TRUE)
+#' correlations <- computeCellLineCorrelation(pSet = intersected,
+#'     coefs = "pearson",
+#'     sensMeasures = "aac_recomputed",
+#'     pval = TRUE)
 #' consistentLines <- getConsistentCellLines(correlations,
 #'     sensMeasure = "aac_recomputed_corrs", coefName = "pearson")
 #' drugAllCorrelations <- computeDrugCorrelation(pSet = intersected,
 #'     coefs = "pearson",
 #'     sensMeasures = "aac_recomputed")
 #' drugConsistentCorrelations <- computeDrugCorrelation(pSet = intersected,
-#'     cellLines = consistentLines,
+#'     cellLines = rownames(consistentLines),
 #'     coefs = "pearson",
 #'     sensMeasures = "aac_recomputed")
 #' concordance <- computeConcordance(allCorrelations = drugAllCorrelations,

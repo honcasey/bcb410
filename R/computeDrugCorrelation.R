@@ -137,7 +137,7 @@ computeDrugCorrelation <- function(pSet,
       cellLines <- rownames(pSet[[1]]@cell)
     } else if (!missing(cellLines)) {
       linesUsed <- rownames(pSet[[1]]@cell)
-      if (all((cellLines == linesUsed) == FALSE)) {
+      if (all((cellLines %in% linesUsed) == FALSE)) {
         stop("cellLines must be a subset of cell lines in the intersected
              PharmacoSet, or \"all\". ")
       }

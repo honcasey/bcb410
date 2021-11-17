@@ -24,7 +24,7 @@
 #' CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
 #' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
 #' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
-#' correlations <- computeCorrelation(pSet = intersected,
+#' correlations <- computeCellLineCorrelation(pSet = intersected,
 #'     coefs = "pearson",
 #'     sensMeasures = "aac_recomputed",
 #'     pval = TRUE)
@@ -67,15 +67,13 @@ getConsistentCellLines <- function(correlations,
 
   if (is.character(coefName) == TRUE) {
     coefUsed <- names(correlations[[sensUsed]])
-    if (all(coefName == coefUsed) == FALSE) {
+    if (all(coefName %in% coefUsed) == FALSE) {
       stop("coefName must be one of the correlation coefficients included
-           in correlations, as returned by
-           names(correlations[[\"sensMeasure\"]]).")
+               in correlations.")
     }
   } else if (is.character(coefName) == FALSE) {
     stop("coefName must be of class character specifying one of the correlation
-         coefficients included in correlations, as returned by
-         names(correlations[[\"sensMeasure\"]]).")
+         coefficients included in correlations.")
   }
 
   if (missing(min) == TRUE) {

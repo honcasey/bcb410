@@ -28,6 +28,17 @@
 #'
 
 intersectSensMeasures <- function(pSet) {
+  # Performing checks
+  if (is.list(pSet) == TRUE) {
+    if (length(pSet) < 2) {
+      stop("pSet list should have at least two PharmacoSets to
+           compare correlations.")
+    }
+  } else if (is.list(pSet) == FALSE) {
+    stop("pSet should be of class list, which contains a list of
+         intersected PharmacoSets.")
+  }
+
   measList <- list()
   for (set in pSet) {
     setList <- list(names(set@sensitivity[["profiles"]]))
@@ -35,3 +46,4 @@ intersectSensMeasures <- function(pSet) {
   }
   return(Reduce(intersect, measList))
 }
+
