@@ -32,7 +32,7 @@ ls("package:cellLineConsistency")
 browseVignettes("cellLineConsistency")
 ``` 
 An overview of the package is illustrated below.
-[][package overview chart.png]
+![](./package overview chart.png)
 
 ## Contributions
 The author of the package is Casey Hon. All functions make use of the `PharmacoGx` S4 *PharmacoSet* R objects, which is a class developed to contain and organise large pharmacogenomic datasets to simplify metaanalyses. The `stats` R package is used for computing correlation coefficients (e.g. Pearson, Spearman, and Kendall) in *computeCellLineCorrelation* and *computeDrugCorrelation*. The `survival` R package is used for computing Harrell's Concordance Index in *computeConcordance*. The `graphics` R package is used in *plotCorrelations*. 
