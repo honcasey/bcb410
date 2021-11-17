@@ -31,7 +31,7 @@
 #' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY),
 #'     intersectOn = c("drugs", "cell.lines"))
 #'
-#' cellLineCorrelations <- computeCorrelation(pSet = intersected,
+#' cellLineCorrelations <- computeCellLineCorrelation(pSet = intersected,
 #'     coefs = "pearson",
 #'     sensMeasures = "aac_recomputed",
 #'     pval = TRUE)
@@ -78,7 +78,7 @@ computeDrugCorrelation <- function(pSet,
 
   if (is.character(coefs) == TRUE) {
     coefsUsed <- c("pearson", "spearman", "kendall")
-    if (all((coefs == coefsUsed) == FALSE)) {
+    if (all((coefs %in% coefsUsed) == FALSE)) {
       stop("coefs should be of class character, specifying either:
            pearson, spearman, and/or kendall.")
     }
@@ -92,15 +92,12 @@ computeDrugCorrelation <- function(pSet,
 
   # separate each pset after intersection
   pSetList <- list()
-  # sensUsed <- list()
   for (set in pSet) {
     x <- set@annotation[["name"]]
     pSetList <- append(pSetList, x)
-    # sensUsed <- append(sensUsed, names(set@sensitivity[["profiles"]]))
     assign(x, set, envir = globalenv())
   }
 
-  # sensUsed <- unique(sensUsed) # keep only unique values of sensitivity measures
   sensUsed <- intersectSensMeasures(pSet)
   # put in package name here? cellLineConsistency::intersectSensMeasures()?
 
@@ -163,16 +160,9 @@ computeDrugCorrelation <- function(pSet,
       setProfList[sensName] <- list(get(var_name))
     }
     profList[pset_name] <- list(setProfList)
-    tryCatch(
-      expr = {
-        assign(drugs, tempPSet@drug) # IGNORE THESE WARNINGS
-        assign(cells, tempPSet@cell)
-      },
-      error = {function(e) {
-        # ignore
-      }}
-    )
   }
+  drugs <- rownames(pSet[[1]]@drug)
+  cells <- rownames(pSet[[1]]@cell)
 
   # initialize data frames to be outputted
   cor_list <- list()
@@ -200,9 +190,11 @@ computeDrugCorrelation <- function(pSet,
             set2sens <- as.numeric(unlist(set2[[sens]][drug, ]))
             # PEARSON CORRELATION
             if ("pearson" %in% coefs) {
-              pearson.cor <- stats::cor.test(set1sens, set2sens,
+              pearson.cor <- stats::cor.test(x = set1sens,
+                                             y = set2sens,
                                              method = 'pearson',
-                                             use = 'pairw')
+                                             use = 'pairw',
+                                             exact = FALSE)
               tofill[drug, "pearson"] <- pearson.cor$estimate
               if ("pearson p-value" %in% coefs) {
                 tofill[drug, "pearson p-value"] <- pearson.cor$p.value
@@ -210,9 +202,11 @@ computeDrugCorrelation <- function(pSet,
             }
             # SPEARMAN CORRELATION
             if ("spearman" %in% coefs) {
-              spearman.cor <- stats::cor.test(set1sens, set2sens,
+              spearman.cor <- stats::cor.test(x = set1sens,
+                                              y = set2sens,
                                               method = 'spearman',
-                                              use = 'pairw')
+                                              use = 'pairw',
+                                              exact = FALSE)
               tofill[drug, "spearman"] <- spearman.cor$estimate
               if ("spearman p-value" %in% coefs) {
                 tofill[drug, "spearman p-value"] <- spearman.cor$p.value
@@ -220,9 +214,11 @@ computeDrugCorrelation <- function(pSet,
             }
             # KENDALL CORRELATION
             if ("kendall" %in% coefs) {
-              kendall.cor <- stats::cor.test(set1sens, set2sens,
+              kendall.cor <- stats::cor.test(x = set1sens,
+                                             y = set2sens,
                                              method = 'kendall',
-                                             use = 'pairw')
+                                             use = 'pairw',
+                                             exact = FALSE)
               tofill[drug, "kendall"] <- kendall.cor$estimate
               if ("kendall p-value" %in% coefs) {
                 tofill[drug, "kendall p-value"] <- kendall.cor$p.value

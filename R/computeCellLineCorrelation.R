@@ -27,7 +27,7 @@
 #' GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
 #' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY),
 #'     intersectOn = c("drugs", "cell.lines"))
-#' correlations <- computeCorrelation(pSet = intersected,
+#' correlations <- computeCellLineCorrelation(pSet = intersected,
 #'     coefs = "pearson",
 #'     sensMeasures = "aac_recomputed",
 #'     pval = TRUE)
@@ -47,13 +47,6 @@
 #' @import stats
 #'
 
-# install.packages(c("devtools", "tidyverse", "fs", "PharmacoGx"))
-# library(devtools)
-# library(tidyverse)
-# library(fs)
-# library(PharmacoGx)
-
-# SET PVAL TO TRUE AS GLOBAL VARIABLE
 computeCellLineCorrelation <- function(pSet,
                                coefs,
                                sensMeasures,
@@ -72,7 +65,7 @@ computeCellLineCorrelation <- function(pSet,
 
   if (is.character(coefs) == TRUE) {
     coefsUsed <- c("pearson", "spearman", "kendall")
-    if (all((coefs == coefsUsed) == FALSE)) {
+    if (all((coefs %in% coefsUsed) == FALSE)) {
       stop("coefs should be of class character, specifying either:
            pearson, spearman, and/or kendall.")
     }
@@ -90,11 +83,9 @@ computeCellLineCorrelation <- function(pSet,
   for (set in pSet) {
     x <- set@annotation[["name"]]
     pSetList <- append(pSetList, x)
-    # sensUsed <- append(sensUsed, names(set@sensitivity[["profiles"]]))
     assign(x, set, envir = globalenv())
   }
 
-  # sensUsed <- unique(sensUsed) # keep only unique values of sensitivity measures
   sensUsed <- intersectSensMeasures(pSet)
   # put in package name here? cellLineConsistency::intersectSensMeasures()?
 
@@ -144,16 +135,9 @@ computeCellLineCorrelation <- function(pSet,
       setProfList[sensName] <- list(get(var_name))
     }
     profList[pset_name] <- list(setProfList)
-    tryCatch(
-      expr = {
-        assign(drugs, tempPSet@drug) # IGNORE THESE WARNINGS
-        assign(cells, tempPSet@cell)
-      },
-      error = {function(e) {
-        # ignore
-      }}
-    )
   }
+  drugs <- rownames(pSet[[1]]@drug)
+  cells <- rownames(pSet[[1]]@cell)
 
   # initialize data frames to be outputted
   cor_list <- list()
@@ -181,9 +165,11 @@ computeCellLineCorrelation <- function(pSet,
       set2sens <- as.numeric(unlist(set2[[sens]][cell.line]))
       # PEARSON CORRELATION
       if ("pearson" %in% coefs) {
-        pearson.cor <- stats::cor.test(set1sens, set2sens,
-                                method = 'pearson',
-                                use = 'pairw')
+        pearson.cor <- stats::cor.test(x = set1sens,
+                                       y = set2sens,
+                                       method = 'pearson',
+                                       use = 'pairw',
+                                       exact = FALSE)
         tofill[cell.line, "pearson"] <- pearson.cor$estimate
         if ("pearson p-value" %in% coefs) {
           tofill[cell.line, "pearson p-value"] <- pearson.cor$p.value
@@ -191,9 +177,11 @@ computeCellLineCorrelation <- function(pSet,
       }
       # SPEARMAN CORRELATION
       if ("spearman" %in% coefs) {
-        spearman.cor <- stats::cor.test(set1sens, set2sens,
-                                 method = 'spearman',
-                                 use = 'pairw')
+        spearman.cor <- stats::cor.test(x = set1sens,
+                                        y = set2sens,
+                                        method = 'spearman',
+                                        use = 'pairw',
+                                        exact = FALSE)
         tofill[cell.line, "spearman"] <- spearman.cor$estimate
         if ("spearman p-value" %in% coefs) {
           tofill[cell.line, "spearman p-value"] <- spearman.cor$p.value
@@ -201,29 +189,28 @@ computeCellLineCorrelation <- function(pSet,
       }
       # KENDALL CORRELATION
       if ("kendall" %in% coefs) {
-        kendall.cor <- stats::cor.test(set1sens, set2sens,
+        kendall.cor <- stats::cor.test(x = set1sens,
+                                       y= set2sens,
                                         method = 'kendall',
-                                        use = 'pairw')
+                                        use = 'pairw',
+                                       exact = FALSE)
         tofill[cell.line, "kendall"] <- kendall.cor$estimate
         if ("kendall p-value" %in% coefs) {
           tofill[cell.line, "kendall p-value"] <- kendall.cor$p.value
         }
       }
       curr_sens <- paste(sens, "corrs", sep = "_")
-      assign(curr_sens, tofill, envir = globalenv())
+      assign(curr_sens, tofill)
       cor_list[[curr_sens]] <- get(curr_sens)
     },
       error = {function(e) {
         message(cell.line, " does not have enough finite observations to compute
                 a correlation, so is left as NA.")
-      }
+        }
       }
     )
       }
     }
-
   }
-
   return(cor_list)
-
 }
