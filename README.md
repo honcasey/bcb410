@@ -32,6 +32,7 @@ ls("package:cellLineConsistency")
 browseVignettes("cellLineConsistency")
 ``` 
 An overview of the package is illustrated below.
+
 ![](./package overview chart.png)
 
 ## Contributions

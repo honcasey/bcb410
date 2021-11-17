@@ -19,7 +19,7 @@ library(cellLineConsistency)
 ```
 
 ## Introduction
-Cancer cell lines are the most commonly used models in cancer biology studies for validating cancer targets and defining drug efficacy. Given that patients have such differing responses to the drugs with widely varying effects, there has been an increasing interest in the shift of medicine from a population-level to patient-specific level, particularly focused on identifying biomarkers of treatment response. 
+Cancer cell lines are the most commonly used models in cancer biology studies for validating cancer targets and defining drug efficacy. Given that patients have such differing responses to the drugs with widely varying effects, there has been an increasing interest in the shift of medicine from a population-level to patient-specific level, particularly focused on identifying biomarkers of treatment response. By understanding how to leverage genotype for predicting drug response at an individual level, treatment plans can be aimed at prescribing the right drug at a dose that causes minimal toxicity. 
 
 One challenge of oncogenic biomarker identification lies in contradictory results from past studies, which have recorded different outcomes from exposure of a same set of cancer cells to the same treatment (Güvenç Paltun et al., 2019). Pharmacogenomics allows for identifying the genomic variants that cause different responses to a particular treatment. These differing responses can be quantified by drug sensitivity measures such as “half maximal inhibitory concentration” (IC50) and “Area Above the Curve” (AAC), which allow for analyzing responses to a range of anticancer agents at variable doses.
 
