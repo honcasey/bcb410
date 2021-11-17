@@ -48,9 +48,9 @@
 #'
 
 computeCellLineCorrelation <- function(pSet,
-                               coefs,
-                               sensMeasures,
-                               pval = TRUE) {
+                                       coefs,
+                                       sensMeasures,
+                                       pval = TRUE) {
 
   # Performing checks
   if (is.list(pSet) == TRUE) {
@@ -93,10 +93,8 @@ computeCellLineCorrelation <- function(pSet,
     # check if all measures inputted are in common in all psets of choice
     if (all((sensMeasures %in% sensUsed) == FALSE)) {
       stop("sensMeasures should be of class character, specifying the drug
-         sensitivity measures as outputted by
-         > names(PSET@sensitivity[[\"profiles\"]])
-         The list must be a subset of the
-         measures in common to all PSets intersected.")
+         sensitivity measures. The list must be a subset of the measures in
+           common to all PSets intersected.")
     }
   } else if (is.character(sensMeasures) != TRUE) {
     stop("sensMeasures should be of class character, specifying the drug
