@@ -33,7 +33,7 @@ browseVignettes("cellLineConsistency")
 ``` 
 An overview of the package is illustrated below.
 
-![](./package_overview_chart.png)
+![](package_overview_chart.png)
 
 ## Contributions
 The author of the package is Casey Hon. All functions make use of the `PharmacoGx` S4 *PharmacoSet* R objects, which is a class developed to contain and organise large pharmacogenomic datasets to simplify metaanalyses. The `stats` R package is used for computing correlation coefficients (e.g. Pearson, Spearman, and Kendall) in *computeCellLineCorrelation* and *computeDrugCorrelation*. The `survival` R package is used for computing Harrell's Concordance Index in *computeConcordance*. The `graphics` R package is used in *plotCorrelations*. 
@@ -41,7 +41,7 @@ The author of the package is Casey Hon. All functions make use of the `PharmacoG
 ## References
 Barretina J, Caponigro G, Stransky N, Venkatesan K, Margolin A, Kim S, Wilson C, Lehár J, Kryukov G, Sonkin D, et al., (2012). The Cancer Cell Line Encyclopedia enables predictive modelling of anticancer drug sensitivity. *Nature*. 483(7391), 603-7.
 
-R Core Team (2020). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. https://www.R-project.org/
+R Core Team (2021). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. https://www.R-project.org/
 
 Smirnov P, Safikhani Z, El-Hachem N, Wang D, She A, Olsen C, Freeman M, Selby H, Gendoo D, Grossman P, Beck A, Aerts H, Lupien M, Haibe-Kains AG, (2016). PharmacoGx: an R package for analysis of large pharmacogenomic datasets. *Bioinformatics (Oxford, England)*.
 

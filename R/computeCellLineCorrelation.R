@@ -43,7 +43,7 @@
 #'     pharmacogenomic datasets.” \emph{Bioinformatics (Oxford, England)}.
 #'
 #'
-#' @import PharmacoGx
+#' @importFrom PharmacoGx BiocManager
 #' @import stats
 #' @export
 #'
