@@ -50,7 +50,7 @@ GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
 intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY),
     intersectOn = c("drugs", "cell.lines"))
 
-cellLineCorrelations <- computeCorrelation(pSet = intersected,
+cellLineCorrelations <- computeCellLineCorrelation(pSet = intersected,
     coefs = "pearson",
     sensMeasures = "aac_recomputed",
     pval = TRUE)

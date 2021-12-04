@@ -24,8 +24,9 @@
 #'     Haibe-Kains AG, (2016). PharmacoGx: an R package for analysis of
 #'     large pharmacogenomic datasets. \emph{Bioinformatics (Oxford, England)}.
 #'
-#' @importFrom PharmacoGx BiocManager
 #' @export
+#' @importFrom PharmacoGx BiocManager
+#'
 #'
 
 intersectSensMeasures <- function(pSet) {

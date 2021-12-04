@@ -36,7 +36,7 @@ Identifies cell lines that are deemed consistent based on the
 CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
 GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
 intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
-correlations <- computeCorrelation(pSet = intersected,
+correlations <- computeCellLineCorrelation(pSet = intersected,
     coefs = "pearson",
     sensMeasures = "aac_recomputed",
     pval = TRUE)

@@ -4,7 +4,7 @@
 \alias{plotCorrelations}
 \title{Plot correlation coefficients in bar plots}
 \usage{
-plotCorrelations(correlations, coefficient)
+plotCorrelations(correlations, coefficient, title)
 }
 \arguments{
 \item{correlations}{A dataframe that contains correlation
@@ -27,8 +27,17 @@ Plots correlation coefficients in bar plot from given
     or computeDrugCorrelation.
 }
 \examples{
-plotCorrelations(correlations$aac_recomputed_corrs,
-    "pearson",
-    "Pearson Correlations of Recomputed AAC Values")
+# Intersect PharmacoSets of interest based on common cell lines
+CTRP <- PharmacoGx::downloadPSet("CTRPv2_2015")
+GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
+intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY),
+    intersectOn = c("drugs", "cell.lines"))
+correlations <- computeCorrelation(pSet = intersected,
+    coefs = "pearson",
+    sensMeasures = "aac_recomputed",
+    pval = TRUE)
+plotCorrelations(correlations = correlations$aac_recomputed_corrs,
+    coefficient = "pearson",
+    title = "Pearson Correlations of Recomputed AAC Values")
 
 }

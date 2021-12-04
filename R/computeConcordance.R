@@ -68,8 +68,9 @@
 #' Therneau T (2021). A Package for Survival Analysis in R. R package version
 #'     3.2-13, https://CRAN.R-project.org/package=survival.
 #'
-#' @import survival
 #' @export
+#' @import survival
+#'
 #'
 
 computeConcordance <- function(allCorrelations,

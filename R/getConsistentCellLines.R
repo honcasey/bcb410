@@ -33,6 +33,7 @@
 #'     coefName = "pearson")
 #'
 #' @author {Casey Hon, \email{casey.hon@mail.utoronto.ca}}
+#'
 #' @export
 #'
 
