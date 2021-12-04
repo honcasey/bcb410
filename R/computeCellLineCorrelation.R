@@ -45,6 +45,7 @@
 #'
 #' @import PharmacoGx
 #' @import stats
+#' @export
 #'
 
 computeCellLineCorrelation <- function(pSet,
@@ -212,3 +213,5 @@ computeCellLineCorrelation <- function(pSet,
   }
   return(cor_list)
 }
+
+#[END]

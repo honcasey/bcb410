@@ -69,6 +69,7 @@
 #'     3.2-13, https://CRAN.R-project.org/package=survival.
 #'
 #' @import survival
+#' @export
 #'
 
 computeConcordance <- function(allCorrelations,
@@ -133,4 +134,4 @@ computeConcordance <- function(allCorrelations,
 
   return(concorded)
 }
-
+#[END]

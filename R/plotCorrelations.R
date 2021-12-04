@@ -29,6 +29,8 @@
 #'     coefficient = "pearson",
 #'     title = "Pearson Correlations of Recomputed AAC Values")
 #'
+#' @export
+#'
 
 plotCorrelations <- function(correlations,
                              coefficient,
@@ -72,3 +74,4 @@ plotCorrelations <- function(correlations,
        font=1,
        cex = 0.7) # x-axis label size
 }
+#[END]

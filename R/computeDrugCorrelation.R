@@ -57,6 +57,7 @@
 #'
 #' @import PharmacoGx
 #' @import stats
+#' @export
 #'
 
 computeDrugCorrelation <- function(pSet,
@@ -239,3 +240,4 @@ computeDrugCorrelation <- function(pSet,
   return(cor_list)
 
 }
+#[END]

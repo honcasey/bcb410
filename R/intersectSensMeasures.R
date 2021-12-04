@@ -25,6 +25,7 @@
 #'     large pharmacogenomic datasets. \emph{Bioinformatics (Oxford, England)}.
 #'
 #' @import PharmacoGx
+#' @export
 #'
 
 intersectSensMeasures <- function(pSet) {
@@ -47,3 +48,4 @@ intersectSensMeasures <- function(pSet) {
   return(Reduce(intersect, measList))
 }
 
+#[END]

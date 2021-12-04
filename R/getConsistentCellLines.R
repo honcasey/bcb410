@@ -33,6 +33,7 @@
 #'     coefName = "pearson")
 #'
 #' @author {Casey Hon, \email{casey.hon@mail.utoronto.ca}}
+#' @export
 #'
 
 getConsistentCellLines <- function(correlations,
@@ -94,3 +95,4 @@ getConsistentCellLines <- function(correlations,
 
   return(cons)
 }
+#[END]
