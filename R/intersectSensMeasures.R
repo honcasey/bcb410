@@ -25,7 +25,7 @@
 #'     large pharmacogenomic datasets. \emph{Bioinformatics (Oxford, England)}.
 #'
 #' @export
-#' @importFrom PharmacoGx BiocManager
+#' @import PharmacoGx
 #'
 #'
 
