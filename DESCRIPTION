@@ -14,7 +14,9 @@ LazyData: true
 URL: https://github.com/honcasey/cellLineConsistency
 Imports:
     PharmacoGx,
-    survival
+    survival,
+    shiny,
+    biocViews
 RoxygenNote: 7.1.2
 Suggests: 
     rmarkdown,

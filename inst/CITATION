@@ -1,0 +1,12 @@
+citHeader("To cite cellLineConsistency in publications use:")
+
+citEntry(
+  entry    = "Unpublished",
+  title    = "cellLineConsistency: An R Package For Identifying Consistent Cell Lines Across Pharmacogenomic Datasets",
+  author   = "Casey Hon",
+  note     = "Unpublished",
+  year     = "2021",
+  textVersion = paste(
+  "Hon, C. (2021) cellLineConsistency: An R Package For Identifying Consistent Cell Lines Across Pharmacogenomic Datasets. Unpublished. URL https://github.com/honcasey/cellLineConsistency"
+  )
+)
