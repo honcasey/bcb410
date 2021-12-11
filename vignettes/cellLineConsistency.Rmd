@@ -111,7 +111,8 @@ plotCorrelations(correlations = drugAllCorrelations$aac_recomputed_corrs,
     coefficient = "pearson",
     title = "Pearson Correlations of Recomputed AAC Values")
 ```
-![](plotCorrelations-output.png)
+
+![](./plotCorrelations-output.png)
 <br>
 
 ## References
