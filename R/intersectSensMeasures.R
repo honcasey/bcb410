@@ -13,8 +13,6 @@
 #' intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
 #'
 #' commonSensMeasures <- intersectSensMeasures(intersected)
-#' commonSensMeasures
-#' > [1] "aac_recomputed"  "ic50_recomputed" "HS"              "E_inf"           "EC50"
 #'
 #' @author {Casey Hon, \email{casey.hon@mail.utoronto.ca}}
 #'

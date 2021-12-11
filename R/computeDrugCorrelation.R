@@ -131,17 +131,20 @@ computeDrugCorrelation <- function(pSet,
     }
   }
 
-  if (is.character(cellLines) == TRUE) {
-    if (missing(cellLines) || cellLines == "all") { # DEFAULT - keep all common cell lines
-      cellLines <- rownames(pSet[[1]]@cell)
-    } else if (!missing(cellLines)) {
-      linesUsed <- rownames(pSet[[1]]@cell)
-      if (all((cellLines %in% linesUsed) == FALSE)) {
-        stop("cellLines must be a subset of cell lines in the intersected
-             PharmacoSet, or \"all\". ")
+  if (missing(cellLines) == TRUE || cellLines == "all") { # DEFAULT - keep all common cell lines
+    cellLines <- rownames(pSet[[1]]@cell)
+  } else if (missing(cellLines) == FALSE) {
+      if (is.character(cellLines) == TRUE) {
+        linesUsed <- rownames(pSet[[1]]@cell)
+        if (all((cellLines %in% linesUsed) == FALSE)) {
+          stop("cellLines must be a subset of cell lines in the intersected
+               PharmacoSet, or \"all\". ")
+        }
+      } else if (is.character(cellLines) == FALSE) {
+        stop("cellLines must be of class character.")
       }
-    }
   }
+
 
   # get sensitivity profiles for each sensitivity measure for each pset
   profList <- list() # list of each psets sensitivity profiles

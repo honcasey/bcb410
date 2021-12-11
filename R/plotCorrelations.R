@@ -29,6 +29,9 @@
 #'     coefficient = "pearson",
 #'     title = "Pearson Correlations of Recomputed AAC Values")
 #'
+#' @importFrom grDevices rainbow
+#' @importFrom graphics par text
+#' @importFrom utils combn
 #' @export
 #'
 

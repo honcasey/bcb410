@@ -22,8 +22,6 @@ GRAY <- PharmacoGx::downloadPSet("GRAY_2013")
 intersected <- PharmacoGx::intersectPSet(c(CTRP, GRAY), intersectOn = c("drugs", "cell.lines"))
 
 commonSensMeasures <- intersectSensMeasures(intersected)
-commonSensMeasures
-> [1] "aac_recomputed"  "ic50_recomputed" "HS"              "E_inf"           "EC50"
 
 }
 \references{
