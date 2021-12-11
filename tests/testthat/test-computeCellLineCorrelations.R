@@ -33,7 +33,7 @@ test_that("Checking function with two sensitivity measures and two coefficient p
   coefs = c("pearson", "spearman")
   sensMeasures = c("aac_recomputed", "ic50_recomputed")
   pval = TRUE
-  correlations_test2 <- computeCellLineCorrelation(pSet = pSet,
+  correlations <- computeCellLineCorrelation(pSet = pSet,
                                              coefs = coefs,
                                              sensMeasures = sensMeasures,
                                              pval = pval)
