@@ -94,7 +94,7 @@ computeDrugCorrelation <- function(pSet,
   for (set in pSet) {
     x <- set@annotation[["name"]]
     pSetList <- append(pSetList, x)
-    assign(x, set, envir = globalenv())
+    assign(x, set)
   }
 
   sensUsed <- intersectSensMeasures(pSet)
@@ -131,7 +131,7 @@ computeDrugCorrelation <- function(pSet,
     }
   }
 
-  if (missing(cellLines) == TRUE || cellLines == "all") { # DEFAULT - keep all common cell lines
+  if (all(missing(cellLines)) == TRUE || cellLines == "all") { # DEFAULT - keep all common cell lines
     cellLines <- rownames(pSet[[1]]@cell)
   } else if (missing(cellLines) == FALSE) {
       if (is.character(cellLines) == TRUE) {
@@ -156,7 +156,7 @@ computeDrugCorrelation <- function(pSet,
       prof <- PharmacoGx::summarizeSensitivityProfiles(tempPSet,
                                                        sensitivity.measure = sensName,
                                                        cell.lines = cellLines)
-      assign(var_name, as.data.frame(prof), envir = globalenv())
+      assign(var_name, as.data.frame(prof))
       setProfList[sensName] <- list(get(var_name))
     }
     profList[pset_name] <- list(setProfList)
@@ -173,8 +173,8 @@ computeDrugCorrelation <- function(pSet,
                        row.names = drugs)
     colnames(cors) <- coefs
     var_name <- paste(sens, "corrs", sep = '_')
-    assign(var_name, cors, envir = globalenv())
-    cor_list[[var_name]] <- get(var_name) # TO-DO: fix warning here (cus they're dataframes)
+    assign(var_name, cors)
+    cor_list[[var_name]] <- get(var_name)
   }
 
   # compute each correlation in coef between each pair of psets
@@ -225,7 +225,7 @@ computeDrugCorrelation <- function(pSet,
               }
             }
             curr_sens <- paste(sens, "corrs", sep = "_")
-            assign(curr_sens, tofill, envir = globalenv())
+            assign(curr_sens, tofill)
             cor_list[[curr_sens]] <- get(curr_sens)
           },
           error = {function(e) {

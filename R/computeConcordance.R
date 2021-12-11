@@ -127,7 +127,7 @@ computeConcordance <- function(allCorrelations,
   toSurv <- transform(merge(allCorrelations[sensMeasure],
                             subsettedCorrelations[sensMeasure],
                             by = 0,
-                            all = TRUE), row.names=Row.names, Row.names=NULL)
+                            all = TRUE), Row.names=NULL)
 
   concorded <- survival::concordance(object = get(paste0(sensMeasure, ".pearson.x"))
                                      ~ get(paste0(sensMeasure, ".pearson.y")),

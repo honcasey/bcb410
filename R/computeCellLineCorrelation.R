@@ -83,7 +83,7 @@ computeCellLineCorrelation <- function(pSet,
   for (set in pSet) {
     x <- set@annotation[["name"]]
     pSetList <- append(pSetList, x)
-    assign(x, set, envir = globalenv())
+    assign(x, set)
   }
 
   sensUsed <- intersectSensMeasures(pSet)
@@ -146,8 +146,8 @@ computeCellLineCorrelation <- function(pSet,
                              row.names = cells)
     colnames(cors) <- coefs
     var_name <- paste(sens, "corrs", sep = '_')
-    assign(var_name, cors, envir = globalenv())
-    cor_list[[var_name]] <- get(var_name) # TO-DO: fix warning here (cus they're dataframes)
+    assign(var_name, cors)
+    cor_list[[var_name]] <- get(var_name)
   }
 
   # compute each correlation in coef between each pair of psets
