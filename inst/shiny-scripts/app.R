@@ -8,42 +8,169 @@
 #
 
 library(shiny)
+library(shinyjs)
 
-# Define UI for application that draws a histogram
+# Define UI for application
 ui <- fluidPage(
+    useShinyjs(),
 
     # Application title
-    titlePanel("Bar Plots"),
+    titlePanel("Identifying Consistent Cancer Cell Lines"),
 
-    # Sidebar with a slider input for number of bins
+    # Sidebar
     sidebarLayout(
+        # sidebar panel for inputs
         sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
+        # STEP 1: upload PharmacoSets
+        tags$p("Provided two to three PharmacoSets (either downloaded from Orcestra or
+               from the PharmacoGx R package onto your local computer as .rds files),
+               intersect them."),
 
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
-    )
+        fileInput(inputId = "pset1",
+                  NULL,
+                  buttonLabel = "Upload PSet 1",
+                  multiple = FALSE,
+                  accept = c(".rds")),
+
+        fileInput(inputId = "pset2",
+                  NULL,
+                  buttonLabel = "Upload PSet 2",
+                  multiple = FALSE,
+                  accept = c(".rds")),
+
+        fileInput(inputId = "pset3",
+                  NULL,
+                  buttonLabel = "Upload PSet 3",
+                  multiple = FALSE,
+                  accept = c(".rds")),
+
+        actionButton(inputId = "upload",
+                     label = "Upload PSets!"),
+
+        # STEP 2: intersect psets
+        shinyjs::hidden(wellPanel(
+            id = "panel_int",
+            tags$p("Select categories on which the PharmacoSets should be intersected."),
+
+            checkboxGroupInput(inputId = "intersectOn",
+                               label = "Intersect on:",
+                               choices = c("drugs", "cell.lines", "concentrations"),
+                               selected = c("drugs")),
+
+            actionButton(inputId = "intersect",
+                         label = "Intersect PSets!")
+        )),
+
+        # STEP 3: select common cell lines of interest
+        shinyjs::hidden(wellPanel(
+            id = "panel_sel",
+            checkboxGroupInput(inputId = "cells",
+                                label = "Cell Lines of Interest:",
+                                choices = NULL),
+
+        # STEP 4: select drugs of interest
+            checkboxGroupInput(inputId = "drugs",
+                            label = "Drugs of Interest:",
+                            choices = NULL)
+        )),
+
+        # STEP 5: compute correlations
+        #actionButton(inputId = "computeCors",
+        #             label = "Compute Correlations!"),
+
+        # STEP 6: display plot(s)
+    ), # end of sidebar panel
+
+    # main panel for displaying outputs
+    mainPanel(
+
+    ) # end of main panel
+)
 )
 
-# Define server logic required to draw a histogram
+
+# Define server logic
+options(shiny.maxRequestSize=200*1024^2) # increase max file input size
+# pset_list <- list()
 server <- function(input, output) {
+    # STEP 1: save uploaded psets as reactives
+    pset_list <- eventReactive(input$upload, { # wait until file is uploaded
+        showModal(modalDialog("Uploading PSets", footer = NULL))
+        if (!is.null(input$pset1) && !is.null(input$pset2)) {
 
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+            ext <- tools::file_ext(input$pset1$name)
+            validate(need(ext == "rds", "Invalid pset1 file. Please upload a .rds file"))
 
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+            ext <- tools::file_ext(input$pset2$name)
+            validate(need(ext == "rds", "Invalid pset2 file. Please upload a .rds file"))
+
+            pset_list <- list()
+            pset1 <- readRDS(input$pset1$datapath)
+            pset2 <- readRDS(input$pset2$datapath)
+            pset_list <- c(pset1, pset2)
+        }
+
+        if (!is.null(input$pset3)) {
+            ext <- tools::file_ext(input$pset1$name)
+            validate(need(ext == "rds", "Invalid file. Please upload a .rds file"))
+            pset3 <- readRDS(input$pset3$datapath)
+            pset_list <- c(pset_list, pset3)
+        }
+        removeModal()
+        return(pset_list)
     })
+
+    observeEvent(pset_list(),
+        shinyjs::showElement(id = "panel_int")
+    )
+
+    intersected <- eventReactive(input$intersect, { #intersect once button is clicked
+        showModal(modalDialog("Intersecting PSets", footer = NULL))
+        PharmacoGx::intersectPSet(pSets = pset_list(),
+                                  intersectOn = input$intersectOn,
+                                  verbose = TRUE
+                                )
+        removeModal()
+        shinyjs::showElement(id = "panel_sel")
+    })
+
+    # use observeEvent to perform an action in response to an event
+    # use eventReactive to create a calculated value that only updates in response to an event
+
+    # update the list of choices in the input$cells checkboxes
+    observeEvent(intersected(), {
+        choices <- intersected()[[1]]@cell$cellid
+        updateSelectInput(inputId = "cells",
+                          choices = choices)
+        },
+        ignoreInit = TRUE
+    )
+
+    # update the list of choices in the input$drugs checkboxes
+    observeEvent(intersected(), {
+        choices <- intersected()[[1]]@drug$drugid
+        updateSelectInput(inputId = "drugs",
+                          choices = choices)
+        },
+        ignoreInit = TRUE
+    )
+
+    cells <- reactive({ # get cell lines chosen
+        req(input$cells)
+    })
+
+    drugs <- reactive({ # get drugs chosen
+        req(input$drugs)
+    })
+
+
 }
+
+
+
+
 
 # Run the application
 shinyApp(ui = ui, server = server)
+
+#[END]
