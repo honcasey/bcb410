@@ -69,7 +69,7 @@
 #'     3.2-13, https://CRAN.R-project.org/package=survival.
 #'
 #' @export
-#' @import survival
+#' @importFrom survival concordance
 #'
 #'
 

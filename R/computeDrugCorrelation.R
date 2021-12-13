@@ -55,8 +55,8 @@
 #'     pharmacogenomic datasets.” \emph{Bioinformatics (Oxford, England)}.
 #'
 #' @export
-#' @import PharmacoGx
-#' @import stats
+#' @importFrom PharmacoGx summarizeSensitivityProfiles
+#' @importFrom stats cor.test
 
 computeDrugCorrelation <- function(pSet,
                                    cellLines = "all",
