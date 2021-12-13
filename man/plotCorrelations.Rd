@@ -4,7 +4,7 @@
 \alias{plotCorrelations}
 \title{Plot correlation coefficients in bar plots}
 \usage{
-plotCorrelations(correlations, sensMeasure, coefficient, title)
+plotCorrelations(correlations, sensMeasure, coefficient, plotTitle)
 }
 \arguments{
 \item{correlations}{A dataframe that contains correlation
@@ -18,7 +18,7 @@ returned by names(correlations).}
 correlation coefficient to plot. Must be one of the coefficients
 in correlations, as returned by names(correlations$sensMeasure).}
 
-\item{title}{A character vector specifying the desired plot title.}
+\item{plotTitle}{A character vector specifying the desired plot title.}
 }
 \value{
 A bar plot with coefficient values on the y-axis, and either
@@ -43,6 +43,6 @@ correlations <- computeCorrelation(pSet = intersected,
 plotCorrelations(correlations = correlations,
     sensMeasure = "aac_recomputed_corrs",
     coefficient = "pearson",
-    title = "Pearson Correlations of Recomputed AAC Values")
+    plotTitle = "Pearson Correlations of Recomputed AAC Values")
 
 }

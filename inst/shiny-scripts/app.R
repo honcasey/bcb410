@@ -107,23 +107,19 @@ ui <- fluidPage(
         shinyjs::hidden(wellPanel(
             id = "plotChoices",
             # choose which sens measure to plot
-            checkboxInput(inputId = "plotSens",
-                               label = "Sensitivity Measure of Interest:",
+            checkboxGroupInput(inputId = "plotSens",
+                               label = "Sensitivity Measure to plot:",
                                choices = NULL),
             # choose which coef to plot
-            checkboxInput(inputId = "plotCoefs",
-                               label = "Correlation Coefficient of Interest:",
-                               choices = c("pearson", "spearman", "kendall")),
+            checkboxGroupInput(inputId = "plotCoefs",
+                               label = "Correlation Coefficient to plot:",
+                               choices = NULL),
             textInput(inputId = "plotTitle",
                       label = "Title for Plot:"),
-            actionButton(inputId = "showPlot",
-                         label = "Update Plot!")
-
-        )),
-        shinyjs::hidden(wellPanel(
-            id = "plot1",
+            #actionButton(inputId = "showPlot",
+            #             label = "Update Plot!")
             plotOutput("cellPlot")
-        ))
+        )),
     ) # end of main panel
 )
 )
@@ -238,26 +234,35 @@ server <- function(input, output) {
 
     # update the list of choices in the input$drugs checkboxes
     observeEvent(cors(), {
-        updateCheckboxInput(inputId = "plotSens",
+        updateCheckboxGroupInput(inputId = "plotSens",
                                  choices = sens())
-        updateCheckboxInput(inputId = "plotCoefs",
+        updateCheckboxGroupInput(inputId = "plotCoefs",
                                  choices = coefs())
     })
 
-    observeEvent(input$showPlot, {
-        req(input$plotSens, input$plotCoefs)
-        shinyjs::showElement(id = "plot1")
-    })
+    #observeEvent(input$showPlot, {
+    #    req(input$plotSens, input$plotCoefs)
+    #    shinyjs::showElement(id = "plot1")
+    #})
 
     plotSens <- reactive({
         input$plotSens
     })
 
-    #output$cellPlot <- renderPlot({
-    #    plotCorrelations(cors()$plotSens(),
-    #                     coefficient = input$plotCoefs,
-    #                     title = input$plotTitle)
-    #})
+    plotCoefs <- reactive({
+        input$plotCoefs
+    })
+
+    plotTitle <- reactive({
+        input$plotTitle
+    })
+
+    output$cellPlot <- renderPlot({
+       plotCorrelations(correlations = cors(),
+                        sensMeasure = plotSens(),
+                        coefficient = plotCoefs(),
+                        title = plotTitle())
+    })
 
 }
 
