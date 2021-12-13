@@ -88,44 +88,61 @@ ui <- fluidPage(
                          label = "Compute Correlations!")
 
         )),
-
-        # STEP 7: get consistent cell lines
-
-        # STEP 8: get drug correlations
-
-        # STEP 9: compute concordance
-
-
-        # STEP 10: plot(s)
-
-
     ), # end of sidebar panel
 
-    # main panel for displaying outputs
-    mainPanel(
+    mainPanel(# main panel for displaying outputs
         shinyjs::hidden(wellPanel(
-            id = "plotChoices",
-            # choose which sens measure to plot
-            checkboxGroupInput(inputId = "plotSens",
-                               label = "Sensitivity Measure to plot:",
-                               choices = NULL),
-            # choose which coef to plot
-            checkboxGroupInput(inputId = "plotCoefs",
-                               label = "Correlation Coefficient to plot:",
-                               choices = NULL),
-            textInput(inputId = "plotTitle",
-                      label = "Title for Plot:"),
+            id = "plots",
+            tabsetPanel(
+            tabPanel(
+                title = "All Cell Lines",
+                # choose which sens measure to plot
+                checkboxGroupInput(inputId = "plotSens",
+                                   label = "Sensitivity Measure to plot:",
+                                   choices = NULL),
+                # choose which coef to plot
+                checkboxGroupInput(inputId = "plotCoefs",
+                                   label = "Correlation Coefficient to plot:",
+                                   choices = NULL),
+                textInput(inputId = "plotTitle",
+                          label = "Title for Plot:"),
 
-            plotOutput("cellPlot") # display cell line correlations
-        )),
-    ) # end of main panel
-)
-)
+                plotOutput("cellPlot") # display cell line correlations
+            ) # end of tab panel
+
+            # tabPanel(
+            #     title = "Consistent Cell Lines",
+            #     # STEP 7: get consistent cell lines
+            #     numericInput(inputId = "min",
+            #                 label = "Minimum correlation coefficient:",
+            #                 min = 0,
+            #                 max = 0.99),
+            #     dataTableOutput(outputId = "consistents") # display consistent cell line return
+            # ),
+            # tabPanel(
+            #     title = "Drugs",
+            #     # STEP 8: get drug correlations
+            #     checkboxInput(inputId = "cellsubset",
+            #                   label = "Only include consistent cell lines?"),
+            #     plotOutput("drugPlot")
+            # ),
+            # tabPanel(
+            #     title = "Concordance",
+            #     # STEP 9: compute concordance
+            #     verbatimTextOutput(outputId = "concPlot")
+            #)
+            )) # end of tabsetpanel
+        )
+        ) # end of main panel
+    ) #end of sidebar layout
+)#end of fluidpage
+
 
 # Define server logic
 options(shiny.maxRequestSize=200*1024^2) # increase max file input size
 # pset_list <- list()
 server <- function(input, output) {
+
     # STEP 1: save uploaded psets as reactives
 
     # TO-DO: check if any files are uploaded before allowing to click upload button
@@ -219,13 +236,11 @@ server <- function(input, output) {
 
     # STEP 6: compute cell line correlations
     cors <- eventReactive(input$computeCors, { # compute once button is clicked
-        showModal("Computing Correlations")
         cors <- computeCellLineCorrelation(pSet = intersected(),
                                            coefs = coefs(),
                                            sensMeasures = sens(),
                                            pval = pval())
-        removeModal()
-        shinyjs::showElement(id = "plotChoices")
+        shinyjs::showElement(id = "plots")
         return(cors)
     })
     # TO-DO: handle computeCellLineCorrelation message returns (not enough obs to compute corrs)

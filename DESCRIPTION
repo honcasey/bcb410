@@ -1,7 +1,7 @@
 Package: cellLineConsistency
 Type: Package
 Title: Identify Consistent Cell Lines in Pharmacogenomic Datasets
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: person("Casey", "Hon", email = "casey.hon@mail.utoronto.ca", role = c("aut", "cre"))
 Maintainer: Casey Hon <casey.hon@mail.utoronto.ca>
 Description: Compute correlations and concordance indices of cancer cell lines 
