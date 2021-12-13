@@ -4,15 +4,19 @@
 \alias{plotCorrelations}
 \title{Plot correlation coefficients in bar plots}
 \usage{
-plotCorrelations(correlations, coefficient, title)
+plotCorrelations(correlations, sensMeasure, coefficient, title)
 }
 \arguments{
 \item{correlations}{A dataframe that contains correlation
 coefficients.}
 
+\item{sensMeasure}{A character vector specifying which sensitivity
+measure to plot. Must be one of the measures in correlations, as
+returned by names(correlations).}
+
 \item{coefficient}{A character vector specifying which
 correlation coefficient to plot. Must be one of the coefficients
-in correlations, as returned by names(correlations).}
+in correlations, as returned by names(correlations$sensMeasure).}
 
 \item{title}{A character vector specifying the desired plot title.}
 }
@@ -36,7 +40,8 @@ correlations <- computeCorrelation(pSet = intersected,
     coefs = "pearson",
     sensMeasures = "aac_recomputed",
     pval = TRUE)
-plotCorrelations(correlations = correlations$aac_recomputed_corrs,
+plotCorrelations(correlations = correlations,
+    sensMeasure = "aac_recomputed_corrs",
     coefficient = "pearson",
     title = "Pearson Correlations of Recomputed AAC Values")
 

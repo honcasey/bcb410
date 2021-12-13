@@ -107,9 +107,10 @@ Finally, we have a quantifiable value of 0.8, with 454 concordant pairs and 107 
 ## Plotting
 To visualize the correlations, we can use *plotCorrelations*.
 ```r
-plotCorrelations(correlations = drugAllCorrelations$aac_recomputed_corrs,
-    coefficient = "pearson",
-    title = "Pearson Correlations of Recomputed AAC Values")
+plotCorrelations(correlations = correlations,
+     sensMeasure = "aac_recomputed_corrs",
+     coefficient = "pearson",
+     title = "Pearson Correlations of Recomputed AAC Values")
 ```
 
 ![](./plotCorrelations-output.png)

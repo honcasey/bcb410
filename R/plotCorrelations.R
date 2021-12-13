@@ -6,9 +6,12 @@
 #'
 #' @param correlations A dataframe that contains correlation
 #'     coefficients.
+#' @param sensMeasure A character vector specifying which sensitivity
+#'     measure to plot. Must be one of the measures in correlations, as
+#'     returned by names(correlations).
 #' @param coefficient A character vector specifying which
 #'     correlation coefficient to plot. Must be one of the coefficients
-#'     in correlations, as returned by names(correlations).
+#'     in correlations, as returned by names(correlations$sensMeasure).
 #' @param title A character vector specifying the desired plot title.
 #'
 #' @return A bar plot with coefficient values on the y-axis, and either
@@ -25,7 +28,8 @@
 #'     coefs = "pearson",
 #'     sensMeasures = "aac_recomputed",
 #'     pval = TRUE)
-#' plotCorrelations(correlations = correlations$aac_recomputed_corrs,
+#' plotCorrelations(correlations = correlations,
+#'     sensMeasure = "aac_recomputed_corrs",
 #'     coefficient = "pearson",
 #'     title = "Pearson Correlations of Recomputed AAC Values")
 #'
@@ -36,6 +40,7 @@
 #'
 
 plotCorrelations <- function(correlations,
+                             sensMeasure,
                              coefficient,
                              title) {
   # Performing Checks
@@ -43,20 +48,28 @@ plotCorrelations <- function(correlations,
     stop("coefficient must of class character, and must be one of the
          coefficients included in the correlations dataframe.")
   } else if (is.character(coefficient) == TRUE) {
-    if (is.data.frame(correlations) == TRUE) {
-      if (!coefficient %in% names(correlations)) {
-        stop("coefficient must be one of the columns of correlations.")
-      } else if (is.data.frame(correlations[coefficient]) == FALSE) {
-        stop("correlations[coefficient] must be of class data.frame.")
+    if (is.character(sensMeasure) == TRUE) {
+      if (is.list(correlations) == TRUE) {
+        if (!sensMeasure %in% names(correlations)) {
+          stop("sensMeasure must be one of the objects in correlations.")
+        } else if (is.list(correlations[[sensMeasure]]) == FALSE) {
+          stop("correlations[sensMeasure] must be of class data.frame.")
+        }
+        if (!coefficient %in% names(correlations[[sensMeasure]])) {
+          stop("coefficient must be one of the columns in
+               correlations$sensMeasure.")
+        }
+      } else if (is.list(correlations) == FALSE) {
+        stop("correlations must be of class list.")
       }
-    } else if (is.data.frame(correlations) == FALSE) {
-      stop("correlations must be of class data.frame.")
+    } else if (is.character(sensMeasure) == FALSE) {
+      stop("sensMeasure must be of class character.")
     }
   }
 
-  rr <- as.matrix(t(cbind(correlations[coefficient])))
+  rr <- as.matrix(t(cbind(correlations[[sensMeasure]][[coefficient]])))
   rr[!is.na(rr) & rr < 0] <- 0 # set negative values to 0
-  names(rr) <- rownames(correlations)
+  names(rr) <- rownames(correlations[[sensMeasure]])
   par(mar = c(8, 5, 5, 5))
   rb <- graphics::barplot(rr,
                           beside = TRUE,
