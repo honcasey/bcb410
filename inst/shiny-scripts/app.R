@@ -61,29 +61,67 @@ ui <- fluidPage(
                          label = "Intersect PSets!")
         )),
 
-        # STEP 3: select common cell lines of interest
+        # STEP 3: select coefficients of interest
         shinyjs::hidden(wellPanel(
             id = "panel_sel",
-            checkboxGroupInput(inputId = "cells",
-                                label = "Cell Lines of Interest:",
-                                choices = NULL),
+            checkboxGroupInput(inputId = "coefs",
+                                label = "Correlation Coefficients of Interest:",
+                                choices = c("pearson", "spearman", "kendall")),
 
-        # STEP 4: select drugs of interest
+            # TO-DO: add text box explaining what pearson, spearman, kendall are
+
+            # STEP 4: select drugs of interest
             checkboxGroupInput(inputId = "drugs",
                             label = "Drugs of Interest:",
-                            choices = NULL)
+                            choices = NULL),
+
+            # STEP 5: select sensitivity measures of interest
+            checkboxGroupInput(inputId = "sens",
+                               label = "Sensitivity Measures of Interest:",
+                               choices = NULL),
+
+            checkboxInput(inputId = "pval",
+                          label = "Include P-Values?"),
+
+            # STEP 6: compute cell line correlations
+            actionButton(inputId = "computeCors",
+                         label = "Compute Correlations!")
+
         )),
+        # display cell line correlations
 
-        # STEP 5: compute correlations
-        #actionButton(inputId = "computeCors",
-        #             label = "Compute Correlations!"),
+        # STEP 7: get consistent cell lines
 
-        # STEP 6: display plot(s)
+        # STEP 8: get drug correlations
+
+        # STEP 9: compute concordance
+
+
+        # STEP 10: plot(s)
+
+
     ), # end of sidebar panel
 
     # main panel for displaying outputs
     mainPanel(
+        shinyjs::hidden(wellPanel(
+            id = "plotChoices",
+            # choose which sens measure to plot
+            checkboxGroupInput(inputId = "plotSens",
+                               label = "Sensitivity Measures of Interest:",
+                               choices = NULL),
+            # choose which coef to plot
+            checkboxGroupInput(inputId = "plotCoefs",
+                               label = "Correlation Coefficients of Interest:",
+                               choices = c("pearson", "spearman", "kendall")),
+            textInput(inputId = "plotTitle",
+                      label = "Title for Plot:")
 
+        )),
+        shinyjs::hidden(wellPanel(
+            id = "plot1",
+            plotOutput("cellPlot")
+        ))
     ) # end of main panel
 )
 )
@@ -98,7 +136,6 @@ server <- function(input, output) {
     pset_list <- eventReactive(input$upload, { # wait until file is uploaded
         showModal(modalDialog("Uploading PSets", footer = NULL))
         if (!is.null(input$pset1) && !is.null(input$pset2)) {
-
             ext <- tools::file_ext(input$pset1$name)
             validate(need(ext == "rds", "Invalid pset1 file. Please upload a .rds file"))
 
@@ -125,6 +162,7 @@ server <- function(input, output) {
         shinyjs::showElement(id = "panel_int")
     )
     # TO-DO: check if uploaded files are PharmacoSets before intersecting
+    # TO-DO: handle intersectPSet errors (check what they can intersect on?)
     intersected <- eventReactive(input$intersect, { #intersect once button is clicked
         showModal(modalDialog("Intersecting PSets", footer = NULL))
         intersected <- PharmacoGx::intersectPSet(pSets = pset_list(),
@@ -140,11 +178,18 @@ server <- function(input, output) {
     # use eventReactive to create a calculated value that only updates in response to an event
 
     # update the list of choices in the input$cells checkboxes
+    #observeEvent(intersected(), {
+    #    choices <- intersected()[[1]]@cell$cellid
+    #    updateCheckboxGroupInput(inputId = "cells",
+    #                      choices = choices,
+    #                      selected = choices)
+    #})
+
+    # update the list of choices in the input$sens checkboxes
     observeEvent(intersected(), {
-        choices <- intersected()[[1]]@cell$cellid
-        updateCheckboxGroupInput(inputId = "cells",
-                          choices = choices,
-                          selected = choices)
+        choices <- intersectSensMeasures(intersected())
+        updateCheckboxGroupInput(inputId = "sens",
+                                 choices = choices)
     })
 
     # update the list of choices in the input$drugs checkboxes
@@ -155,9 +200,19 @@ server <- function(input, output) {
                           selected = choices)
     })
 
-    cells <- reactive({ # get cell lines chosen
-        req(input$cells)
-        return(input$cells)
+    #cells <- reactive({ # get cell lines chosen
+    #    req(input$cells)
+    #    return(input$cells)
+    #})
+
+    coefs <- reactive({ # get coefs chosen
+        req(input$coefs)
+        return(input$coefs)
+    })
+
+    sens <- reactive({ # get sens chosen
+        req(input$sens)
+        return(input$sens)
     })
 
     drugs <- reactive({ # get drugs chosen
@@ -165,6 +220,38 @@ server <- function(input, output) {
         return(input$drugs)
     })
 
+    pval <- reactive({
+        req(input$pval)
+        return(input$pval) #returns TRUE if checked, FALSE otherwise
+    })
+
+    # STEP 6: compute cell line correlations
+    cors <- eventReactive(input$computeCors, { # compute once button is clicked
+        showModal("Computing Correlations")
+        cors <- computeCellLineCorrelation(pSet = intersected(),
+                                           coefs = coefs(),
+                                           sensMeasures = sens(),
+                                           pval = pval())
+        removeModal()
+        shinyjs::showElement(id = "plotChoices")
+        return(cors)
+    })
+
+    # update the list of choices in the input$drugs checkboxes
+    observeEvent(cors(), {
+        updateCheckboxGroupInput(inputId = "plotSens",
+                                 choices = sens())
+        updateCheckboxGroupInput(inputId = "plotCoefs",
+                                 choices = coefs())
+    })
+
+    output$cellPlot <- renderPlot({
+        req(input$plotSens, input$plotCoefs)
+        shinyjs::showElement(id = "plot1")
+        plotCorrelations(cors()$input$sens,
+                         coefficient = input$plotCoefs,
+                         title = input$plotTitle)
+    })
 
 }
 
