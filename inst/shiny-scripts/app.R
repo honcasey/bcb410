@@ -88,12 +88,13 @@ ui <- fluidPage(
 )
 )
 
-
 # Define server logic
 options(shiny.maxRequestSize=200*1024^2) # increase max file input size
 # pset_list <- list()
 server <- function(input, output) {
     # STEP 1: save uploaded psets as reactives
+
+    # TO-DO: check if any files are uploaded before allowing to click upload button
     pset_list <- eventReactive(input$upload, { # wait until file is uploaded
         showModal(modalDialog("Uploading PSets", footer = NULL))
         if (!is.null(input$pset1) && !is.null(input$pset2)) {
@@ -123,15 +124,16 @@ server <- function(input, output) {
     observeEvent(pset_list(),
         shinyjs::showElement(id = "panel_int")
     )
-
+    # TO-DO: check if uploaded files are PharmacoSets before intersecting
     intersected <- eventReactive(input$intersect, { #intersect once button is clicked
         showModal(modalDialog("Intersecting PSets", footer = NULL))
-        PharmacoGx::intersectPSet(pSets = pset_list(),
+        intersected <- PharmacoGx::intersectPSet(pSets = pset_list(),
                                   intersectOn = input$intersectOn,
                                   verbose = TRUE
                                 )
         removeModal()
         shinyjs::showElement(id = "panel_sel")
+        return(intersected)
     })
 
     # use observeEvent to perform an action in response to an event
@@ -140,27 +142,27 @@ server <- function(input, output) {
     # update the list of choices in the input$cells checkboxes
     observeEvent(intersected(), {
         choices <- intersected()[[1]]@cell$cellid
-        updateSelectInput(inputId = "cells",
-                          choices = choices)
-        },
-        ignoreInit = TRUE
-    )
+        updateCheckboxGroupInput(inputId = "cells",
+                          choices = choices,
+                          selected = choices)
+    })
 
     # update the list of choices in the input$drugs checkboxes
     observeEvent(intersected(), {
         choices <- intersected()[[1]]@drug$drugid
-        updateSelectInput(inputId = "drugs",
-                          choices = choices)
-        },
-        ignoreInit = TRUE
-    )
+        updateCheckboxGroupInput(inputId = "drugs",
+                          choices = choices,
+                          selected = choices)
+    })
 
     cells <- reactive({ # get cell lines chosen
         req(input$cells)
+        return(input$cells)
     })
 
     drugs <- reactive({ # get drugs chosen
         req(input$drugs)
+        return(input$drugs)
     })
 
 
