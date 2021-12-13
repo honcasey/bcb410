@@ -51,7 +51,7 @@ Correlation Coefficients like Pearson, Spearman, and Kendall correlations can be
 
 Here is an example workflow to identify consistent cell lines between the CTRPv2 (Seashore-Ludlow et al., 2015; Rees et al., 2016) and GRAY (Daemen et al., 2013; Hafner et al., 2017) PharmacoSets. Specifically, we want to see how the recomputed Area Above the Curve (aac_recomputed) values of the common cell lines between CTRP and GRAY compare across the two datasets, get the list of which cell lines are consistent, and quantify how consistency changes when we remove the inconsistent cell lines.
 
-First, we use the *PharmacoGx* package to download and intersect the two PharmacoSets based on their common cell lines and drugs. If the user has specific cell lines or drugs of interest before downloading the PharmacoSets, these should be specified at this step using the *cell* or *drug* parameters in the *intersectPSet()* function. At the moment, downloading PharmacoSets must be done outside of the Shiny app due to large file size, but they are downloadable in the R package.
+First, we use the *PharmacoGx* package to download and intersect the two PharmacoSets (PSets) based on their common cell lines and drugs. If the user has specific cell lines or drugs of interest before downloading the PharmacoSets, these should be specified at this step using the *cell* or *drug* parameters in the *intersectPSet()* function. At the moment, downloading PharmacoSets must be done outside of the Shiny app due to large file size, but they are downloadable in the R package. For uploading PSets on Shiny, the PSets can be downloaded on [orcestra](https://orcestra.ca/pset/canonical).
 
 ``` r
 library(PharmacoGx)

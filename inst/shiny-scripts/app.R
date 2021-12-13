@@ -115,7 +115,9 @@ ui <- fluidPage(
                                label = "Correlation Coefficients of Interest:",
                                choices = c("pearson", "spearman", "kendall")),
             textInput(inputId = "plotTitle",
-                      label = "Title for Plot:")
+                      label = "Title for Plot:"),
+            actionButton(inputId = "showPlot",
+                         label = "Update Plot!")
 
         )),
         shinyjs::hidden(wellPanel(
@@ -206,23 +208,19 @@ server <- function(input, output) {
     #})
 
     coefs <- reactive({ # get coefs chosen
-        req(input$coefs)
-        return(input$coefs)
+        input$coefs
     })
 
     sens <- reactive({ # get sens chosen
-        req(input$sens)
-        return(input$sens)
+        input$sens
     })
 
     drugs <- reactive({ # get drugs chosen
-        req(input$drugs)
-        return(input$drugs)
+        input$drugs
     })
 
     pval <- reactive({
-        req(input$pval)
-        return(input$pval) #returns TRUE if checked, FALSE otherwise
+        input$pval #returns TRUE if checked, FALSE otherwise
     })
 
     # STEP 6: compute cell line correlations
@@ -236,6 +234,7 @@ server <- function(input, output) {
         shinyjs::showElement(id = "plotChoices")
         return(cors)
     })
+    # TO-DO: handle computeCellLineCorrelation message returns (not enough obs to compute corrs)
 
     # update the list of choices in the input$drugs checkboxes
     observeEvent(cors(), {
@@ -245,10 +244,13 @@ server <- function(input, output) {
                                  choices = coefs())
     })
 
-    output$cellPlot <- renderPlot({
+    observeEvent(input$showPlot, {
         req(input$plotSens, input$plotCoefs)
         shinyjs::showElement(id = "plot1")
-        plotCorrelations(cors()$input$sens,
+    })
+
+    output$cellPlot <- renderPlot({
+        plotCorrelations(cors()[[input$plotSens]],
                          coefficient = input$plotCoefs,
                          title = input$plotTitle)
     })
