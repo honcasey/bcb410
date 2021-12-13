@@ -88,7 +88,6 @@ ui <- fluidPage(
                          label = "Compute Correlations!")
 
         )),
-        # display cell line correlations
 
         # STEP 7: get consistent cell lines
 
@@ -116,9 +115,8 @@ ui <- fluidPage(
                                choices = NULL),
             textInput(inputId = "plotTitle",
                       label = "Title for Plot:"),
-            #actionButton(inputId = "showPlot",
-            #             label = "Update Plot!")
-            plotOutput("cellPlot")
+
+            plotOutput("cellPlot") # display cell line correlations
         )),
     ) # end of main panel
 )
@@ -240,28 +238,24 @@ server <- function(input, output) {
                                  choices = coefs())
     })
 
-    #observeEvent(input$showPlot, {
-    #    req(input$plotSens, input$plotCoefs)
-    #    shinyjs::showElement(id = "plot1")
-    #})
-
-    plotSens <- reactive({
-        input$plotSens
+    plotSens <- renderText({
+        paste0(input$plotSens, "_corrs")
     })
 
-    plotCoefs <- reactive({
+    plotCoefs <- renderText({
         input$plotCoefs
     })
 
-    plotTitle <- reactive({
+    plotTitle <- renderText({
         input$plotTitle
     })
 
     output$cellPlot <- renderPlot({
-       plotCorrelations(correlations = cors(),
-                        sensMeasure = plotSens(),
-                        coefficient = plotCoefs(),
-                        title = plotTitle())
+        req(input$plotSens, input$plotCoefs)
+        plotCorrelations(correlations = cors(),
+                         sensMeasure = plotSens(),
+                         coefficient = plotCoefs(),
+                         plotTitle = plotTitle())
     })
 
 }
