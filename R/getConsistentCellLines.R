@@ -82,7 +82,7 @@ getConsistentCellLines <- function(correlations,
     min = 0.5 # DEFAULT
   } else if (!missing(min)) {
     if (!is.numeric(min)) {
-      stop("Min should be a numeric value from 0 to 1.")
+      stop("Min should be a numeric value.")
     } else if (is.numeric(min)) {
       if (min < 0 || min > 1) {
         stop("Min should be a numeric value from 0 to 1.")

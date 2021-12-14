@@ -9,11 +9,11 @@
 #'     cell lines, as returned by PharmacoGx::intersectPSet(). PharmacoSets
 #'     should have sensitivity information which can be checked using
 #'     PharmacoGx::availablePSets() in the 'type' column.
-#' @param cellLines List of cell lines to keep in analysis. Default is all
+#' @param cellLines Character cell lines to keep in analysis. Default is all
 #'     common cell lines between PharmacoSets given in pSet ("all").
-#' @param coefs List of correlation coefficients of interest. Current options
+#' @param coefs Character of correlation coefficients of interest. Current options
 #'     are: "pearson", "spearman", "kendall".
-#' @param sensMeasures List of drug sensitivity measures of interest. Options
+#' @param sensMeasures Character of drug sensitivity measures of interest. Options
 #'     depend on the PharmacoSets chosen, and can be identified by looking at
 #'     names(pSetName@sensitivity[["profiles"]])
 #' @param pval Logical of whether or not to include p-values of each

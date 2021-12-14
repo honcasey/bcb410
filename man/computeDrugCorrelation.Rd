@@ -18,13 +18,13 @@ cell lines, as returned by PharmacoGx::intersectPSet(). PharmacoSets
 should have sensitivity information which can be checked using
 PharmacoGx::availablePSets() in the 'type' column.}
 
-\item{cellLines}{List of cell lines to keep in analysis. Default is all
+\item{cellLines}{Character cell lines to keep in analysis. Default is all
 common cell lines between PharmacoSets given in pSet ("all").}
 
-\item{coefs}{List of correlation coefficients of interest. Current options
+\item{coefs}{Character of correlation coefficients of interest. Current options
 are: "pearson", "spearman", "kendall".}
 
-\item{sensMeasures}{List of drug sensitivity measures of interest. Options
+\item{sensMeasures}{Character of drug sensitivity measures of interest. Options
 depend on the PharmacoSets chosen, and can be identified by looking at
 names(pSetName@sensitivity[["profiles"]])}
 
