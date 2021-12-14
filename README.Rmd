@@ -34,14 +34,14 @@ devtools::install_github("honcasey/cellLineConsistency", build_vignettes = TRUE)
 library("cellLineConsistency")
 
 To run the shinyApp:
-Under construction
+cellLineConsistency::runCellLineConsistency()
 ```
 
 ## Overview
 ``` r
 ls("package:cellLineConsistency")
 ``` 
-`cellLineConsistency` contains 6 functions that can be used in identifying and quantifying consistent cancer cell lines. The *intersectSensMeasures* function identifies sensitivity measures common to all datasets of interest. The *computeCellLineCorrelation* function computes correlation coefficients of cell line drug sensitivity measures across datasets. The *computeDrugCorrelation* function computes correlation coefficients by drugs across datasets. The *getConsistentCellLines* function subsets cell lines deemed as consistent based on a user-specified minimum correlation. The *computeConcordance* function computes Harrell's Concordance Index to quantify improvement in consistency between the correlations of the original and subsetted cell lines. *plotCorrelations* generates a barplot to compare cell line/drug correlations. Refer to package vignette for more details.
+`cellLineConsistency` contains 7 functions that can be used in identifying and quantifying consistent cancer cell lines. The *intersectSensMeasures* function identifies sensitivity measures common to all datasets of interest. The *computeCellLineCorrelation* function computes correlation coefficients of cell line drug sensitivity measures across datasets. The *computeDrugCorrelation* function computes correlation coefficients by drugs across datasets. The *getConsistentCellLines* function subsets cell lines deemed as consistent based on a user-specified minimum correlation. The *computeConcordance* function computes Harrell's Concordance Index to quantify improvement in consistency between the correlations of the original and subsetted cell lines. *plotCorrelations* generates a barplot to compare cell line/drug correlations. The *runCellLineConsistency* isthe shiny implementation of the package. Refer to package vignette for more details.
 ``` r
 browseVignettes("cellLineConsistency")
 ``` 
