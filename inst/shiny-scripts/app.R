@@ -108,29 +108,42 @@ ui <- fluidPage(
                           label = "Title for Plot:"),
 
                 plotOutput("cellPlot") # display cell line correlations
-            ) # end of tab panel
+                # TO-DO: make plot bigger and add capability to download
+            ), # end of tab panel
 
-            # tabPanel(
-            #     title = "Consistent Cell Lines",
-            #     # STEP 7: get consistent cell lines
-            #     numericInput(inputId = "min",
-            #                 label = "Minimum correlation coefficient:",
-            #                 min = 0,
-            #                 max = 0.99),
-            #     dataTableOutput(outputId = "consistents") # display consistent cell line return
-            # ),
-            # tabPanel(
-            #     title = "Drugs",
-            #     # STEP 8: get drug correlations
-            #     checkboxInput(inputId = "cellsubset",
-            #                   label = "Only include consistent cell lines?"),
-            #     plotOutput("drugPlot")
-            # ),
-            # tabPanel(
-            #     title = "Concordance",
-            #     # STEP 9: compute concordance
-            #     verbatimTextOutput(outputId = "concPlot")
-            #)
+            tabPanel(
+                title = "Consistent Cell Lines",
+                # STEP 7: get consistent cell lines
+                # choose which sens measure to plot
+                # choose which sens measure to plot
+                checkboxGroupInput(inputId = "plotSens_cons",
+                                   label = "Sensitivity Measure to plot:",
+                                   choices = NULL),
+                # choose which coef to plot
+                checkboxGroupInput(inputId = "plotCoefs_cons",
+                                   label = "Correlation Coefficient to plot:",
+                                   choices = NULL),
+                numericInput(inputId = "min",
+                            label = "Minimum correlation coefficient:",
+                            value = 0.5,
+                            min = 0,
+                            max = 0.99),
+                dataTableOutput(outputId = "consistents") # display consistent cell line return
+            ),
+            tabPanel(
+                title = "Drugs",
+                # STEP 8: get drug correlations
+                checkboxInput(inputId = "cellsubset",
+                              label = "Only include consistent cell lines?"),
+                textInput(inputId = "drugTitle",
+                          label = "Title for Plot:"),
+                plotOutput("drugPlot")
+            ),
+            tabPanel(
+                title = "Concordance",
+                # STEP 9: compute concordance
+                verbatimTextOutput(outputId = "conc")
+            )
             )) # end of tabsetpanel
         )
         ) # end of main panel
@@ -140,7 +153,6 @@ ui <- fluidPage(
 
 # Define server logic
 options(shiny.maxRequestSize=200*1024^2) # increase max file input size
-# pset_list <- list()
 server <- function(input, output) {
 
     # STEP 1: save uploaded psets as reactives
@@ -190,14 +202,6 @@ server <- function(input, output) {
     # use observeEvent to perform an action in response to an event
     # use eventReactive to create a calculated value that only updates in response to an event
 
-    # update the list of choices in the input$cells checkboxes
-    #observeEvent(intersected(), {
-    #    choices <- intersected()[[1]]@cell$cellid
-    #    updateCheckboxGroupInput(inputId = "cells",
-    #                      choices = choices,
-    #                      selected = choices)
-    #})
-
     # update the list of choices in the input$sens checkboxes
     observeEvent(intersected(), {
         choices <- intersectSensMeasures(intersected())
@@ -212,11 +216,6 @@ server <- function(input, output) {
                           choices = choices,
                           selected = choices)
     })
-
-    #cells <- reactive({ # get cell lines chosen
-    #    req(input$cells)
-    #    return(input$cells)
-    #})
 
     coefs <- reactive({ # get coefs chosen
         input$coefs
@@ -245,11 +244,15 @@ server <- function(input, output) {
     })
     # TO-DO: handle computeCellLineCorrelation message returns (not enough obs to compute corrs)
 
-    # update the list of choices in the input$drugs checkboxes
+    # update the list of choices
     observeEvent(cors(), {
         updateCheckboxGroupInput(inputId = "plotSens",
                                  choices = sens())
         updateCheckboxGroupInput(inputId = "plotCoefs",
+                                 choices = coefs())
+        updateCheckboxGroupInput(inputId = "plotSens_cons",
+                                 choices = sens())
+        updateCheckboxGroupInput(inputId = "plotCoefs_cons",
                                  choices = coefs())
     })
 
@@ -257,26 +260,79 @@ server <- function(input, output) {
         paste0(input$plotSens, "_corrs")
     })
 
-    plotCoefs <- renderText({
-        input$plotCoefs
+    plotSens_cons <- renderText({
+        paste0(input$plotSens_cons, "_corrs")
     })
+#
+#     plotCoefs <- renderText({
+#         input$plotCoefs
+#     })
+#
+#     plotTitle <- renderText({
+#         input$plotTitle
+#     })
 
-    plotTitle <- renderText({
-        input$plotTitle
-    })
-
-    output$cellPlot <- renderPlot({
+    output$cellPlot <- renderPlot({ # display cell line correlations
         req(input$plotSens, input$plotCoefs)
         plotCorrelations(correlations = cors(),
                          sensMeasure = plotSens(),
+                         coefficient = input$plotCoefs,
+                         plotTitle = input$plotTitle)
+    })
+
+
+    output$consistents <- DT::renderDataTable({ # display consistent cell line return
+        getConsistentCellLines(correlations = cors(), #returns a data frame
+                               sensMeasure = input$plotSens_cons,
+                               coefName = input$plotCoefs_cons,
+                               min = input$min)
+    })
+
+    cellSubset <- renderText({
+        input$cellsubset
+    })
+
+    subCells <- renderText({
+        cells <- getConsistentCellLines(correlations = cors(),
+                               sensMeasure = plotSens_cons(),
+                               coefName = input$plotCoefs_cons,
+                               min = input$min)
+        rownames(cells)
+    })
+
+    output$drugPlot <- renderPlot({
+        if (isTRUE(cellSubset)) {
+            drugCors <- computeDrugCorrelation(pSet = intersected(),
+                                   cellLines = subCells(),
+                                   coefs = plotCoefs(),
+                                   sensMeasures = plotSens())
+        }
+        else {
+            drugCors <- computeDrugCorrelation(pSet = intersected(),
+                                   coefs = plotCoefs(),
+                                   sensMeasures = plotSens())
+        }
+        plotCorrelations(correlations = drugCors,
+                         sensMeasure = plotSens(),
                          coefficient = plotCoefs(),
-                         plotTitle = plotTitle())
+                         title = input$drugTitle)
+    })
+
+    output$conc <- renderPrint({
+        allCors <- computeDrugCorrelation(pSet = intersected(),
+                                          coefs = plotCoefs(),
+                                          sensMeasures = plotSens())
+        consCors <- computeDrugCorrelation(pSet = intersected(),
+                                           cellLines = subCells(),
+                                           coefs = plotCoefs(),
+                                           sensMeasures = plotSens())
+        computeConcordance(allCorrelations = allCors,
+                           subsettedCorrelations = consCors,
+                           sensMeasure = plotSens(),
+                           coefName = plotCoefs())
     })
 
 }
-
-
-
 
 
 # Run the application

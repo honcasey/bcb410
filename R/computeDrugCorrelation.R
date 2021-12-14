@@ -98,16 +98,14 @@ computeDrugCorrelation <- function(pSet,
   }
 
   sensUsed <- intersectSensMeasures(pSet)
-  # put in package name here? cellLineConsistency::intersectSensMeasures()?
 
   if (is.character(sensMeasures) == TRUE) {
     # check if all measures inputted are in common in all psets of choice
     if (all((sensMeasures %in% sensUsed) == FALSE)) {
-      stop("sensMeasures should be of class character, specifying the drug
-         sensitivity measures. The list must be a subset of the measures in
+      stop("sensMeasures must be a subset of the measures in
            common to all PSets intersected.")
     }
-  } else if (is.character(sensMeasures) != TRUE) {
+  } else if (is.character(sensMeasures) == FALSE) {
     stop("sensMeasures should be of class character, specifying the drug
          sensitivity measures as outputted by
          > names(PSET@sensitivity[[\"profiles\"]])")
