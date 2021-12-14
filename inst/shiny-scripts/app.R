@@ -120,7 +120,7 @@ ui <- fluidPage(
                             value = 0.5,
                             min = 0,
                             max = 0.99),
-                DT::dataTableOutput(outputId = "consistents") # display consistent cell line return
+                tableOutput("consistents") # display consistent cell line return
             ),
             tabPanel(
                 title = "Drugs",
@@ -248,15 +248,6 @@ server <- function(input, output) {
         paste0(input$plotSens, "_corrs")
     })
 
-#
-#     plotCoefs <- renderText({
-#         input$plotCoefs
-#     })
-#
-#     plotTitle <- renderText({
-#         input$plotTitle
-#     })
-
     output$cellPlot <- renderPlot({ # display cell line correlations
         req(input$plotSens, input$plotCoefs)
         plotCorrelations(correlations = cors(),
@@ -265,30 +256,34 @@ server <- function(input, output) {
                          plotTitle = input$plotTitle)
     })
 
-    output$consistents <- DT::renderDataTable({ # display consistent cell line return
-        getConsistentCellLines(correlations = cors(), #returns a data frame
+    getTable <- reactive({
+        getConsistentCellLines(correlations = cors(),
                                sensMeasure = plotSens(),
                                coefName = input$plotCoefs,
                                min = input$min)
     })
+
+    output$consistents <- renderTable({ # full table of consistent cell line info (for output)
+        getTable()
+    },
+    rownames = TRUE) # ROW NAMES NOT SHOWING
 
     cellSubset <- renderText({
         input$cellsubset
     })
 
-    subCells <- renderText({
-        cells <- getConsistentCellLines(correlations = cors(),
+    subCells <- renderText({ # consistent cell line NAMES ONLY (for back end use)
+        conLines <- getConsistentCellLines(correlations = cors(),
                                sensMeasure = plotSens(),
                                coefName = input$plotCoefs,
                                min = input$min)
-        rownames(cells)
-    })
+        rownames(conLines)
+        })
 
     output$drugPlot <- renderPlot({ # MAKE CELLSUBSET REACTIVE
         if (isTRUE(cellSubset)) {
-            print(subCells)
             drugCors <- computeDrugCorrelation(pSet = intersected(),
-                                   cellLines = subCells(),
+                                   cellLines = strsplit(subCells(), " ")[[1]],
                                    coefs = input$plotCoefs,
                                    sensMeasures = input$plotSens)
         }
@@ -308,7 +303,7 @@ server <- function(input, output) {
                                           coefs = input$plotCoefs,
                                           sensMeasures = input$plotSens)
         consCors <- computeDrugCorrelation(pSet = intersected(),
-                                           cellLines = subCells(),
+                                           cellLines = strsplit(subCells(), " ")[[1]],
                                            coefs = input$plotCoefs,
                                            sensMeasures = input$plotSens)
         computeConcordance(allCorrelations = allCors,
@@ -316,7 +311,6 @@ server <- function(input, output) {
                            sensMeasure = plotSens(),
                            coefName = input$plotCoefs)
     })
-
 }
 
 
