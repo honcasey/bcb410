@@ -209,28 +209,12 @@ server <- function(input, output) {
                           selected = choices)
     })
 
-    coefs <- reactive({ # get coefs chosen
-        input$coefs
-    })
-
-    sens <- reactive({ # get sens chosen
-        input$sens
-    })
-
-    drugs <- reactive({ # get drugs chosen
-        input$drugs
-    })
-
-    pval <- reactive({
-        input$pval #returns TRUE if checked, FALSE otherwise
-    })
-
     # STEP 6: compute cell line correlations
     cors <- eventReactive(input$computeCors, { # compute once button is clicked
         cors <- computeCellLineCorrelation(pSet = intersected(),
-                                           coefs = coefs(),
-                                           sensMeasures = sens(),
-                                           pval = pval())
+                                           coefs = input$coefs,
+                                           sensMeasures = input$sens,
+                                           pval = input$pval)
         shinyjs::showElement(id = "plots")
         return(cors)
     })
@@ -239,9 +223,9 @@ server <- function(input, output) {
     # update the list of choices
     observeEvent(cors(), {
         updateCheckboxGroupInput(inputId = "plotSens",
-                                 choices = sens())
+                                 choices = input$sens)
         updateCheckboxGroupInput(inputId = "plotCoefs",
-                                 choices = coefs())
+                                 choices = input$coefs)
     })
 
     plotSens <- renderText({

@@ -129,7 +129,7 @@ computeDrugCorrelation <- function(pSet,
     }
   }
 
-  if (all(missing(cellLines) == TRUE) || cellLines == "all") { # DEFAULT - keep all common cell lines
+  if (missing(cellLines) == TRUE || cellLines == "all") { # DEFAULT - keep all common cell lines
     cellLines <- rownames(pSet[[1]]@cell)
   } else if (missing(cellLines) == FALSE) {
       if (is.character(cellLines) == TRUE) {
