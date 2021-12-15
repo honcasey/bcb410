@@ -41,7 +41,12 @@ cellLineConsistency::runCellLineConsistency()
 ``` r
 ls("package:cellLineConsistency")
 ``` 
-`cellLineConsistency` contains 7 functions that can be used in identifying and quantifying consistent cancer cell lines. The *intersectSensMeasures* function identifies sensitivity measures common to all datasets of interest. The *computeCellLineCorrelation* function computes correlation coefficients of cell line drug sensitivity measures across datasets. The *computeDrugCorrelation* function computes correlation coefficients by drugs across datasets. The *getConsistentCellLines* function subsets cell lines deemed as consistent based on a user-specified minimum correlation. The *computeConcordance* function computes Harrell's Concordance Index to quantify improvement in consistency between the correlations of the original and subsetted cell lines. *plotCorrelations* generates a barplot to compare cell line/drug correlations. The *runCellLineConsistency* isthe shiny implementation of the package. Refer to package vignette for more details.
+`cellLineConsistency` contains 7 functions that can be used in identifying and quantifying consistent cancer cell lines. The *intersectSensMeasures* function identifies sensitivity measures common to all datasets of interest. The *computeCellLineCorrelation* function computes correlation coefficients of cell line drug sensitivity measures across datasets. The *computeDrugCorrelation* function computes correlation coefficients by drugs across datasets. The *getConsistentCellLines* function subsets cell lines deemed as consistent based on a user-specified minimum correlation. The *computeConcordance* function computes Harrell's Concordance Index to quantify improvement in consistency between the correlations of the original and subsetted cell lines. *plotCorrelations* generates a barplot to compare cell line/drug correlations. The *runCellLineConsistency* is the shiny implementation of the package. Refer to package vignette for more details.
+
+## Shiny Specification
+PharmacoSets to be uploaded on the Shiny app can be downloaded on [orcestra](https://orcestra.ca/pset/canonical).
+
+## Tutorial
 ``` r
 browseVignettes("cellLineConsistency")
 ``` 
@@ -51,6 +56,11 @@ An overview of the package is illustrated below.
 
 ## Contributions
 The author of the package is Casey Hon. All functions make use of the `PharmacoGx` S4 *PharmacoSet* R objects, which is a class developed to contain and organise large pharmacogenomic datasets to simplify metaanalyses. The `stats` R package is used for computing correlation coefficients (e.g. Pearson, Spearman, and Kendall) in *computeCellLineCorrelation* and *computeDrugCorrelation*. The `survival` R package is used for computing Harrell's Concordance Index in *computeConcordance*. The `graphics` R package is used in *plotCorrelations*. 
+
+## Citation for Package
+``` r
+citation("cellLineConsistency")
+``` 
 
 ## References
 Barretina J, Caponigro G, Stransky N, Venkatesan K, Margolin A, Kim S, Wilson C, Lehár J, Kryukov G, Sonkin D, et al., (2012). The Cancer Cell Line Encyclopedia enables predictive modelling of anticancer drug sensitivity. *Nature*. 483(7391), 603-7.
