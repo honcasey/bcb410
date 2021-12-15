@@ -90,10 +90,10 @@ getConsistentCellLines <- function(correlations,
     }
   }
 
-  sens_cor <- correlations[[sensMeasure]]   # subset correlations
+  sens_cor <- as.data.frame(correlations[[sensMeasure]])   # subset correlations
   # only keep correlations geq to min
   cons <- sens_cor[which(sens_cor[coefName] >= min), ]
 
-  return(cons)
+  return(as.data.frame(cons))
 }
 #[END]

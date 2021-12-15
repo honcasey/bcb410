@@ -66,7 +66,8 @@ ui <- fluidPage(
             id = "panel_sel",
             checkboxGroupInput(inputId = "coefs",
                                 label = "Correlation Coefficients of Interest:",
-                                choices = c("pearson", "spearman", "kendall")),
+                                choices = c("pearson", "spearman", "kendall"),
+                               selected = c("pearson")),
 
             # TO-DO: add text box explaining what pearson, spearman, kendall are
 
@@ -145,9 +146,7 @@ ui <- fluidPage(
 options(shiny.maxRequestSize=200*1024^2) # increase max file input size
 server <- function(input, output) {
 
-    # STEP 1: save uploaded psets as reactives
-
-    # TO-DO: check if any files are uploaded before allowing to click upload button
+    # =save uploaded psets as reactives
     pset_list <- eventReactive(input$upload, { # wait until file is uploaded
         showModal(modalDialog("Uploading PSets", footer = NULL))
         if (!is.null(input$pset1) && !is.null(input$pset2)) {
@@ -238,24 +237,26 @@ server <- function(input, output) {
                          plotTitle = input$plotTitle)
     })
 
-    getTable <- reactive({
-        getConsistentCellLines(correlations = cors(),
+    getTable <- eventReactive(input$min, {
+        dt <- getConsistentCellLines(correlations = cors(),
                                sensMeasure = plotSens(),
                                coefName = input$plotCoefs,
                                min = input$min)
+        return(as.data.frame(dt))
     })
 
     output$consistents <- renderTable({ # full table of consistent cell line info (for output)
-        getTable()
-    }) # ROW NAMES NOT SHOWING
+        as.data.frame(getTable())},
+        rownames = TRUE
+    ) # ROW NAMES NOT SHOWING
 
-    subCells <- renderText({ # consistent cell line NAMES ONLY (for back end use)
+    subCells <- eventReactive(input$update, { # consistent cell line NAMES ONLY (for back end use)
         conLines <- getConsistentCellLines(correlations = cors(),
                                sensMeasure = plotSens(),
                                coefName = input$plotCoefs,
                                min = input$min)
-        rownames(conLines)
-        })
+        return(unlist(strsplit(as.character(rownames(as.data.frame(conLines))), " ")))
+    }) ## THIS IS NOT RETURNING ANYTHING ??
 
     output$drugPlot <- renderPlot({
         drugCors <- computeDrugCorrelation(pSet = intersected(),
@@ -271,10 +272,8 @@ server <- function(input, output) {
         allCors <- computeDrugCorrelation(pSet = intersected(),
                                           coefs = input$plotCoefs,
                                           sensMeasures = input$plotSens)
-        print(c("allCors = ", str(allCors)))
-        print(c("strsplit = ", strsplit(subCells(), " ")[[1]]))
         consCors <- computeDrugCorrelation(pSet = intersected(),
-                                           cellLines = strsplit(subCells(), " ")[[1]],
+                                           cellLines = subCells(),
                                            coefs = input$plotCoefs,
                                            sensMeasures = input$plotSens)
         computeConcordance(allCorrelations = allCors,
