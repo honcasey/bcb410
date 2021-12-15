@@ -131,7 +131,7 @@ computeDrugCorrelation <- function(pSet,
 
   if (missing(cellLines) == TRUE || cellLines == "all") { # DEFAULT - keep all common cell lines
     cellLines <- rownames(pSet[[1]]@cell)
-  } else if (missing(cellLines) == FALSE) {
+  } else {
       if (is.character(cellLines) == TRUE) {
         linesUsed <- rownames(pSet[[1]]@cell)
         if (all((cellLines %in% linesUsed) == FALSE)) {
